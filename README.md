@@ -10,7 +10,7 @@ The bootstrap.ps1 has several parameters. These include:
 - -Bootstrap - this will install the PowerShell modules listed in the [requirements.psd1](./requirements.psd1) file
 - -InstallVSCode - Installs VS Code
 - -InstallAzureCLI - Installs the Azure CLI
-- -CreateDirectories - Creates the default directories and, if supplied in [xxx](), and additional directories
+- -CreateDirectories - Creates the default directories and, if supplied in the -Directories parameter, and additional directories
 - -InstallRecommendedApplications - Installs recommended applications such as Notepad++, WinMerge and 7Zip
 - -InstallVisualStudio - Installs Visual Studio 2022 Enterprise edition
 - -Architecture - an optional parameter to assist in the *which architecture* checks
