@@ -22,6 +22,9 @@ Param
     # Installs the full Visual Studio 2022 Enterprise
     [switch]$InstallVisualStudio,
 
+    # Installs Postman
+    [switch]$InstallPostman,
+
     # Visual Studio Code installation
     [parameter()]
     [ValidateSet(, "64-bit", "32-bit")]
@@ -214,6 +217,17 @@ if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
     }
     else{
         Write-Host "Notepad++ is already installed" -ForegroundColor Green
+    }
+
+    if(!(Test-Path "$env:LOCALAPPDATA\Postman\postman.exe")){
+        Write-Host "Installing Postman"
+        Invoke-WebRequest -Uri https://dl.pstmn.io/download/latest/win64 -OutFile .\postman.exe
+        Start-Process .\postman.exe -Wait
+        Remove-Item .\postman.exe
+        Write-Host "Installed Postman" -ForegroundColor Green
+    }
+    else{
+        Write-Host "Postman is already installed" -ForegroundColor Green
     }
 
     if(!(Test-Path "$codePath\WinMerge\WinMergeU.exe")){
