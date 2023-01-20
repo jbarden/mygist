@@ -1,3 +1,6 @@
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+
+
 [CmdletBinding()]
 Param
 (
@@ -13,7 +16,7 @@ Param
     # Bootstrap Azure CLI
     [switch]$AzureCLI,
 
-    # Create the default directories (if list supplied below, this will also be created)
+    # Create the default directories (if a list is supplied below, they will also be created, otherwise, a default list will be created)
     [switch]$CreateDirectories,
 
     # Installs applications like Notepad++, WinMerge, 7Zip, etc.
@@ -211,6 +214,36 @@ if ($CreateDirectories.IsPresent -or $All.IsPresent)
 }
 
 if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
+
+    $appName = "GIT"
+    if(!(Test-Path "$codePath\Git\bin\$appName.exe")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/Git-2.39.1-64-bit.exe -OutFile .\$appName.exe
+        Write-Host "Installing $appName"
+        Start-Process .\$appName.exe -Wait
+        Remove-Item .\$appName.exe
+        Write-Host "Installed $appName" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    $appName = "GitHub Desktop"
+    if(!(Test-Path "C:\Users\jason\AppData\Local\GitHubDesktop\GitHubDesktop.exe")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://central.github.com/deployments/desktop/desktop/latest/win32 -OutFile .\$appName.exe
+        Write-Host "Installing $appName"
+        Start-Process .\$appName.exe -Wait
+        Remove-Item .\$appName.exe
+        Write-Host "Installed $appName" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    
+
+
     if(!(Test-Path "$codePath\Notepad++\notepad++.exe")){
         Write-Host "Downloading Notepad++"
         Invoke-WebRequest -Uri https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.6/npp.8.4.6.Installer.x64.exe -OutFile .\npp.8.4.6.Installer.x64.exe
@@ -223,7 +256,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
         Write-Host "Notepad++ is already installed" -ForegroundColor Green
     }
 
-    if(!(Test-Path "$env:LOCALAPPDATA\Docker\Docker.exe")){
+    if(!(Test-Path "C:\Program Files\Docker\Docker\Docker Desktop.exe")){
         Write-Host "Installing Docker"
         Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -OutFile .\docker.exe
         Start-Process .\Docker.exe -Wait
