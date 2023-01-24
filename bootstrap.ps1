@@ -25,9 +25,6 @@ Param
     # Installs the full Visual Studio 2022 - Professional or Enterprise
     [switch]$VisualStudio,
 
-    # Installs Postman
-    [switch]$Postman,
-
     # Visual Studio Code installation
     [parameter()]
     [ValidateSet("64-bit", "32-bit")]
@@ -156,12 +153,10 @@ if ($VSCode.IsPresent -or $All.IsPresent)
                 Write-Host "`n$appName is already installed." -ForegroundColor Yellow
             }
 
-            # + @("") + @("") 
             $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + @("vue.vscode-typescript-vue-plugin") + @("sdras.vue-vscode-snippets") + @("dariofuzinato.vue-peek") + $AdditionalExtensions
             foreach ($extension in $extensions)
             {
-                Write-Host "`nInstalling extension $extension..." -ForegroundColor Yellow
-                & $codeCmdPath --install-extension $extension --force
+                & $codeCmdPath -ArgumentList --install-extension $extension --force
             }
 
             Write-Host "`nInstallation complete!`n`n" -ForegroundColor Green
@@ -319,8 +314,7 @@ if ($VisualStudio.IsPresent -or $All.IsPresent)
                 $vsDownloadFileName = "$env:USERPROFILE\downloads\VisualStudio-2022-$($BuildEdition).exe"
                 Write-Host "`nDownloading latest $appName to $vsDownloadFileName..." -ForegroundColor Yellow
                 Remove-Item -Force $vsDownloadFileName -ErrorAction SilentlyContinue
-                Invoke-WebRequest -Uri "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=$($VisualStudioEdition)&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false" -OutFile $vsDownloadFileName
-    
+                Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_$VisualStudioEdition.exe" -OutFile $vsDownloadFileName
                 Write-Host "`nInstalling $appName..." -ForegroundColor Yellow
                 Start-Process -Wait $vsDownloadFileName -ArgumentList /silent, /mergetasks=!runcode
                 Write-Host "`nInstallation complete!`n`n" -ForegroundColor Green
