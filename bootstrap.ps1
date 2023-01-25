@@ -112,7 +112,6 @@ if ($VSCode.IsPresent -or $All.IsPresent)
     Write-Host "`nChecking whether VS-Code is installed..." 
     if (($PSVersionTable.PSVersion.Major -le 5) -or $IsWindows)
     {
-        
         switch ($BuildEdition)
         {
             "Stable"
@@ -135,6 +134,7 @@ if ($VSCode.IsPresent -or $All.IsPresent)
         } else {
             Write-Host "`nCodeCmdPath is: $codeCmdPath..." -ForegroundColor Red
         }
+
         try
         {
             $ProgressPreference = 'SilentlyContinue'
@@ -224,7 +224,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     }
 
     $appName = "GitHub Desktop"
-    if(!(Test-Path "C:\Users\jason\AppData\Local\GitHubDesktop\GitHubDesktop.exe")){
+    if(!(Test-Path "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe")){
         Write-Host "Downloading $appName"
         Invoke-WebRequest -Uri https://central.github.com/deployments/desktop/desktop/latest/win32 -OutFile .\$appName.exe
         Write-Host "Installing $appName"
@@ -236,8 +236,55 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
         Write-Host "$appName is already installed" -ForegroundColor Green
     }
 
-    
+    $appName = "Microsoft.PowerShell"
+    if(!(Test-Path "TBC")){
+        Write-Host "Installing $appName"
+        Install-Module -Name Terminal-Icons -Repository PSGallery
+        winget install Microsoft.PowerShell
+        Write-Host "Installed $appName" -ForegroundColor Green
+        Write-Host "Please remember to set $appName as the default profile in Terminal!!!" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
 
+    $appName = "CascadiaCode"
+    if(!(Test-Path "C:\Windows\Fonts\Caskaydia Cove              Nerd Font Complete Windows Compatible.ttf")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip?WT.mc_id=-blog-scottha -OutFile .\$appName.zip
+        Write-Host "Installing $appName"
+        Expand-Archive -LiteralPath .\$appName.zip -DestinationPath .\$appName\ -Force
+        Remove-Item .\$appName.zip
+        Invoke-Item .
+        Write-Host "Please install the fonts" -ForegroundColor Green
+        # winget install JanDeDobbeleer.OhMyPosh
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+    
+    $appName = "OhMyPosh"
+    if(!(Test-Path "TBC")){
+        Write-Host "Installing $appName"
+        winget install JanDeDobbeleer.OhMyPosh
+        Write-Host "Installed $appName" -ForegroundColor Green
+        Write-Host "Please remember to set Microsoft.PowerShell as the default profile in Terminal!!!" -ForegroundColor Green
+
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+    
+    $appName = "PowerShell Profile file"
+    if(!(Test-Path $profile)){
+        Write-Host "Creating $appName"
+        New-Item -path $profile -type file
+        Write-Host "Created $appName" -ForegroundColor Green
+        Write-Host "Please remember to set Microsoft.PowerShell as the default profile in Terminal!!!" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName already exists" -ForegroundColor Green
+    }
 
     if(!(Test-Path "$codePath\Notepad++\notepad++.exe")){
         Write-Host "Downloading Notepad++"
