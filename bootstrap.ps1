@@ -299,8 +299,9 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     }
 
     if(!(Test-Path "C:\Program Files\Docker\Docker\Docker Desktop.exe")){
-        Write-Host "Installing Docker"
+        Write-Host "Downloading Docker"
         Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -OutFile .\docker.exe
+        Write-Host "Installing Docker"
         Start-Process .\Docker.exe -Wait
         Remove-Item .\Docker.exe
         Write-Host "Installed Docker" -ForegroundColor Green
@@ -310,8 +311,9 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     }
 
     if(!(Test-Path "$env:LOCALAPPDATA\Postman\postman.exe")){
-        Write-Host "Installing Postman"
+        Write-Host "Downloading Postman"
         Invoke-WebRequest -Uri https://dl.pstmn.io/download/latest/win64 -OutFile .\postman.exe
+        Write-Host "Installing Postman"
         Start-Process .\postman.exe -Wait
         Remove-Item .\postman.exe
         Write-Host "Installed Postman" -ForegroundColor Green
