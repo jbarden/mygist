@@ -16,14 +16,11 @@ Param
     # Create the default directories (if list supplied below, this will also be created)
     [switch]$CreateDirectories,
 
-    # Installs applications like Notepad++, WinMerge, 7Zip, etc.
+    # Installs applications like Docker, Notepad++, WinMerge, 7Zip, etc.
     [switch]$InstallRecommendedApplications,
 
     # Installs the full Visual Studio 2022 Enterprise
     [switch]$InstallVisualStudio,
-
-    # Installs Postman
-    [switch]$InstallPostman,
 
     # Visual Studio Code installation
     [parameter()]
@@ -201,11 +198,6 @@ if ($CreateDirectories.IsPresent -or $All.IsPresent)
     Write-Host "CreateDirectories completed" -ForegroundColor Green
 }
 
-
-# https://notepad-plus-plus.org/downloads/v8.4.6/
-# 
-
-
 if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
     if(!(Test-Path "$codePath\Notepad++\notepad++.exe")){
         Write-Host "Downloading Notepad++"
@@ -228,6 +220,17 @@ if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
     }
     else{
         Write-Host "Postman is already installed" -ForegroundColor Green
+    }
+
+    if(!(Test-Path "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe")){
+        Write-Host "Installing Docker"
+        Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -OutFile .\Docker.exe
+        Start-Process .\Docker.exe -Wait
+        Remove-Item .\Docker.exe
+        Write-Host "Installed Docker" -ForegroundColor Green
+    }
+    else{
+        Write-Host "Docker is already installed" -ForegroundColor Green
     }
 
     if(!(Test-Path "$codePath\WinMerge\WinMergeU.exe")){
