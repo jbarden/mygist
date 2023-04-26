@@ -1,3 +1,6 @@
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+
+
 [CmdletBinding()]
 Param
 (
@@ -8,28 +11,32 @@ Param
     [switch]$Bootstrap,
 
     # Bootstrap VSCode
-    [switch]$InstallVSCode,
+    [switch]$VSCode,
 
     # Bootstrap Azure CLI
-    [switch]$InstallAzureCLI,
+    [switch]$AzureCLI,
 
-    # Create the default directories (if list supplied below, this will also be created)
+    # Create the default directories (if a list is supplied below, they will also be created, otherwise, a default list will be created)
     [switch]$CreateDirectories,
 
-    # Installs applications like Docker, Notepad++, WinMerge, 7Zip, etc.
-    [switch]$InstallRecommendedApplications,
+    # Installs applications like Notepad++, WinMerge, 7Zip, etc.
+    [switch]$RecommendedApplications,
 
-    # Installs the full Visual Studio 2022 Enterprise
-    [switch]$InstallVisualStudio,
+    # Installs the full Visual Studio 2022 - Professional or Enterprise
+    [switch]$VisualStudio,
 
     # Visual Studio Code installation
     [parameter()]
-    [ValidateSet(, "64-bit", "32-bit")]
+    [ValidateSet("64-bit", "32-bit")]
     [string]$Architecture = "64-bit",
 
     [parameter()]
     [ValidateSet("stable", "insider")]
     [string]$BuildEdition = "stable",
+
+    [parameter()]
+    [ValidateSet("enterprise", "professional")]
+    [string]$VisualStudioEdition = "enterprise",
 
     [Parameter()]
     [ValidateNotNull()]
@@ -100,12 +107,11 @@ if ($Bootstrap.IsPresent -or $All.IsPresent) {
     Invoke-PSDepend -Path './requirements.psd1' -Install -Import -Force -WarningAction SilentlyContinue
 }
 
-if ($InstallVSCode.IsPresent -or $All.IsPresent) 
+if ($VSCode.IsPresent -or $All.IsPresent) 
 {
     Write-Host "`nChecking whether VS-Code is installed..." 
     if (($PSVersionTable.PSVersion.Major -le 5) -or $IsWindows)
     {
-        
         switch ($BuildEdition)
         {
             "Stable"
@@ -123,15 +129,20 @@ if ($InstallVSCode.IsPresent -or $All.IsPresent)
         }
         
         if(((Get-CimInstance -ClassName Win32_OperatingSystem).Name).Contains("Windows 11")){
-            $codeCmdPath = "$env:LOCALAPPDATA\Programs\Microsoft VS Code\bin\code.cmd"
+            $codeCmdPath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
+            Write-Host "`nReset codeCmdPath to: $codeCmdPath..." -ForegroundColor Green
+        } else {
+            Write-Host "`nCodeCmdPath is: $codeCmdPath..." -ForegroundColor Red
         }
+
         try
         {
             $ProgressPreference = 'SilentlyContinue'
             if (!(Test-Path $codeCmdPath))
             {
                 Write-Host "`nDownloading latest $appName..." -ForegroundColor Yellow
-                Remove-Item -Force "$env:TEMP\vscode-$($BuildEdition).exe" -ErrorAction Stop
+                Write-Host "`n$env:TEMP\vscode-$($BuildEdition).exe..." -ForegroundColor Yellow
+                Remove-Item -Force "$env:TEMP\vscode-$($BuildEdition).exe" -ErrorAction SilentlyContinue
                 Invoke-WebRequest -Uri "https://update.code.visualstudio.com/latest/$($bitVersion)/$($BuildEdition)" -OutFile "$env:TEMP\vscode-$($BuildEdition).exe"
     
                 Write-Host "`nInstalling $appName..." -ForegroundColor Yellow
@@ -141,12 +152,11 @@ if ($InstallVSCode.IsPresent -or $All.IsPresent)
             {
                 Write-Host "`n$appName is already installed." -ForegroundColor Yellow
             }
-    
-            $extensions = @("ms-azuretools.vscode-bicep") + $AdditionalExtensions
+
+            $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + @("vue.vscode-typescript-vue-plugin") + @("sdras.vue-vscode-snippets") + @("dariofuzinato.vue-peek") + $AdditionalExtensions
             foreach ($extension in $extensions)
             {
-                Write-Host "`nInstalling extension $extension..." -ForegroundColor Yellow
-                & $codeCmdPath --install-extension $extension --force
+                & $codeCmdPath -ArgumentList --install-extension $extension --force
             }
 
             Write-Host "`nInstallation complete!`n`n" -ForegroundColor Green
@@ -163,7 +173,7 @@ if ($InstallVSCode.IsPresent -or $All.IsPresent)
     }
 }
 
-if ($InstallAzureCLI.IsPresent -or $All.IsPresent)
+if ($AzureCLI.IsPresent -or $All.IsPresent)
 {
     Write-Host "Installing Azure CLI"
     Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi
@@ -198,7 +208,84 @@ if ($CreateDirectories.IsPresent -or $All.IsPresent)
     Write-Host "CreateDirectories completed" -ForegroundColor Green
 }
 
-if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
+if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
+
+    $appName = "GIT"
+    if(!(Test-Path "$codePath\Git\bin\$appName.exe")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/Git-2.39.1-64-bit.exe -OutFile .\$appName.exe
+        Write-Host "Installing $appName"
+        Start-Process .\$appName.exe -Wait
+        Remove-Item .\$appName.exe
+        Write-Host "Installed $appName" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    $appName = "GitHub Desktop"
+    if(!(Test-Path "$env:USERPROFILE\AppData\Local\GitHubDesktop\GitHubDesktop.exe")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://central.github.com/deployments/desktop/desktop/latest/win32 -OutFile .\$appName.exe
+        Write-Host "Installing $appName"
+        Start-Process .\$appName.exe -Wait
+        Remove-Item .\$appName.exe
+        Write-Host "Installed $appName" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    $appName = "Microsoft.PowerShell"
+    if(!(Test-Path "TBC")){
+        Write-Host "Installing $appName"
+        Install-Module -Name Terminal-Icons -Repository PSGallery
+        winget install Microsoft.PowerShell
+        Write-Host "Installed $appName" -ForegroundColor Green
+        Write-Host "Please remember to set $appName as the default profile in Terminal!!!" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    $appName = "CascadiaCode"
+    if(!(Test-Path "C:\Windows\Fonts\Caskaydia Cove              Nerd Font Complete Windows Compatible.ttf")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip?WT.mc_id=-blog-scottha -OutFile .\$appName.zip
+        Write-Host "Installing $appName"
+        Expand-Archive -LiteralPath .\$appName.zip -DestinationPath .\$appName\ -Force
+        Remove-Item .\$appName.zip
+        Invoke-Item .
+        Write-Host "Please install the fonts" -ForegroundColor Green
+        # winget install JanDeDobbeleer.OhMyPosh
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+    
+    $appName = "OhMyPosh"
+    if(!(Test-Path "TBC")){
+        Write-Host "Installing $appName"
+        winget install JanDeDobbeleer.OhMyPosh
+        Write-Host "Installed $appName" -ForegroundColor Green
+        Write-Host "Please remember to set Microsoft.PowerShell as the default profile in Terminal!!!" -ForegroundColor Green
+
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+    
+    $appName = "PowerShell Profile file"
+    if(!(Test-Path $profile)){
+        Write-Host "Creating $appName"
+        New-Item -path $profile -type file
+        Write-Host "Created $appName" -ForegroundColor Green
+        Write-Host "Please remember to set Microsoft.PowerShell as the default profile in Terminal!!!" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName already exists" -ForegroundColor Green
+    }
+
     if(!(Test-Path "$codePath\Notepad++\notepad++.exe")){
         Write-Host "Downloading Notepad++"
         Invoke-WebRequest -Uri https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.6/npp.8.4.6.Installer.x64.exe -OutFile .\npp.8.4.6.Installer.x64.exe
@@ -211,9 +298,22 @@ if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
         Write-Host "Notepad++ is already installed" -ForegroundColor Green
     }
 
+    if(!(Test-Path "C:\Program Files\Docker\Docker\Docker Desktop.exe")){
+        Write-Host "Downloading Docker"
+        Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -OutFile .\docker.exe
+        Write-Host "Installing Docker"
+        Start-Process .\Docker.exe -Wait
+        Remove-Item .\Docker.exe
+        Write-Host "Installed Docker" -ForegroundColor Green
+    }
+    else{
+        Write-Host "Docker is already installed" -ForegroundColor Green
+    }
+
     if(!(Test-Path "$env:LOCALAPPDATA\Postman\postman.exe")){
-        Write-Host "Installing Postman"
+        Write-Host "Downloading Postman"
         Invoke-WebRequest -Uri https://dl.pstmn.io/download/latest/win64 -OutFile .\postman.exe
+        Write-Host "Installing Postman"
         Start-Process .\postman.exe -Wait
         Remove-Item .\postman.exe
         Write-Host "Installed Postman" -ForegroundColor Green
@@ -258,12 +358,12 @@ if ($InstallRecommendedApplications.IsPresent -or $All.IsPresent) {
     }
 }
 
-if ($InstallVisualStudio.IsPresent -or $All.IsPresent) 
+if ($VisualStudio.IsPresent -or $All.IsPresent) 
 {
     Write-Host "`nChecking whether Visual Studio is installed..." 
     if (($PSVersionTable.PSVersion.Major -le 5) -or $IsWindows)
     {
-        $vsExePath = "$codePath\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe"
+        $vsExePath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe"
         $appName = "Visual Studio 2022 ($($Architecture))"
         
         try
@@ -271,12 +371,12 @@ if ($InstallVisualStudio.IsPresent -or $All.IsPresent)
             $ProgressPreference = 'SilentlyContinue'
             if (!(Test-Path $vsExePath))
             {
-                Write-Host "`nDownloading latest $appName..." -ForegroundColor Yellow
-                Remove-Item -Force "$env:TEMP\VisualStudio-2022-$($BuildEdition).exe" -ErrorAction Stop
-                Invoke-WebRequest -Uri "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Enterprise&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false" -OutFile "$env:TEMP\VisualStudio-2022-$($BuildEdition).exe"
-    
+                $vsDownloadFileName = "$env:USERPROFILE\downloads\VisualStudio-2022-$($BuildEdition).exe"
+                Write-Host "`nDownloading latest $appName to $vsDownloadFileName..." -ForegroundColor Yellow
+                Remove-Item -Force $vsDownloadFileName -ErrorAction SilentlyContinue
+                Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_$VisualStudioEdition.exe" -OutFile $vsDownloadFileName
                 Write-Host "`nInstalling $appName..." -ForegroundColor Yellow
-                Start-Process -Wait "$env:TEMP\VisualStudio-2022-$($BuildEdition).exe" -ArgumentList /silent, /mergetasks=!runcode
+                Start-Process -Wait $vsDownloadFileName -ArgumentList /silent, /mergetasks=!runcode
                 Write-Host "`nInstallation complete!`n`n" -ForegroundColor Green
             }
             else
@@ -291,6 +391,6 @@ if ($InstallVisualStudio.IsPresent -or $All.IsPresent)
     }
     else
     {
-        Write-Error "This script is currently only supported on the Windows operating system."
+        Write-Error "This script only supports Visual Studio installation on the Windows operating system... Sorry!"
     }
 }
