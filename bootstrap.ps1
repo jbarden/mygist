@@ -13,6 +13,9 @@ Param
     # Bootstrap VSCode
     [switch]$VSCode,
 
+    # Install Fork (GIT CLient)
+    [switch]$Fork,
+
     # Bootstrap Azure CLI
     [switch]$AzureCLI,
 
@@ -179,6 +182,23 @@ if ($AzureCLI.IsPresent -or $All.IsPresent)
     Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi
     Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
     Remove-Item .\AzureCLI.msi
+}
+
+if ($Fork.IsPresent -or $All.IsPresent)
+{
+    #C:\Users\jbarden\AppData\Local\Fork\Fork.exe
+    $appName = "Fork"
+    if(!(Test-Path "$env:LOCALAPPDATA\fork\$appName.exe")){
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri  https://cdn.fork.dev/win/Fork-1.83.1.exe -OutFile .\$appName.exe
+        Write-Host "Installing $appName"
+        Start-Process .\$appName.exe -Wait
+        Remove-Item .\$appName.exe
+        Write-Host "Installed $appName" -ForegroundColor Green
+    }
+    else{
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
 }
 
 if ($CreateDirectories.IsPresent -or $All.IsPresent)

@@ -1,5 +1,7 @@
 # mygist
 
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+
 Setup new PC / Update existing PC
 
 ## How to use
