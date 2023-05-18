@@ -184,7 +184,7 @@ if ($AzureCLI.IsPresent -or $All.IsPresent)
     Remove-Item .\AzureCLI.msi
 }
 
-if ($Fork.IsPresent -or $All.IsPresent)
+if ($RecommendedApplications.IsPresent -or $Fork.IsPresent -or $All.IsPresent)
 {
     #C:\Users\jbarden\AppData\Local\Fork\Fork.exe
     $appName = "Fork"
