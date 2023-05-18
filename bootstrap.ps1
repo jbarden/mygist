@@ -190,7 +190,7 @@ if ($RecommendedApplications.IsPresent -or $Fork.IsPresent -or $All.IsPresent)
     $appName = "Fork"
     if(!(Test-Path "$env:LOCALAPPDATA\fork\$appName.exe")){
         Write-Host "Downloading $appName"
-        Invoke-WebRequest -Uri  https://cdn.fork.dev/win/Fork-1.83.1.exe -OutFile .\$appName.exe
+        Invoke-WebRequest -Uri  https://cdn.fork.dev/win/Fork-1.84.0.exe -OutFile .\$appName.exe
         Write-Host "Installing $appName"
         Start-Process .\$appName.exe -Wait
         Remove-Item .\$appName.exe
@@ -204,7 +204,7 @@ if ($RecommendedApplications.IsPresent -or $Fork.IsPresent -or $All.IsPresent)
 if ($CreateDirectories.IsPresent -or $All.IsPresent)
 {
     Write-Host "Creating default directories..."
-    $DefaultDirectories = @("c:\temp", "c:\GitHub\mine", "c:\GitHub\work", "c:\repos", "c:\repos\mine", "c:\repos\work")
+    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\repos\mine", "c:\repos\work")
     foreach($directory in $DefaultDirectories){
         if (!(Test-Path $directory)){
             Write-Host "$($directory) does not exist...creating"
