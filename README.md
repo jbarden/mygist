@@ -20,6 +20,9 @@ The bootstrap.ps1 has several parameters. These include:
 - -AdditionalExtensions - only relevant to VS Code - if populated, the list of extensions will be installed along with VS Code
 - -Directories - an optional list of additional directories to create
 
+## Misc
+If, as it often does, VS decides to loose the NuGet feed: ```https://api.nuget.org/v3/index.json```
+
 ## Example calls
 
 ``` PowerShell
