@@ -1,4 +1,4 @@
-# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+# Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
 
 [CmdletBinding()]
 Param
@@ -99,7 +99,7 @@ switch ($Architecture) {
 if ($RecommendedApplications.IsPresent -or $Fork.IsPresent -or $All.IsPresent) {
     $appName = "Fork" 
     $installPath = "$env:LOCALAPPDATA\fork\$appName.exe"
-    $uri = "https://cdn.fork.dev/win/Fork-1.83.1.exe"
+    $uri = "https://cdn.fork.dev/win/Fork-1.89.1.exe"
     
     InstallIfRequired -appName $appName -installPath $installPath -Uri $uri
 }
@@ -115,7 +115,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
 if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     $appName = "Notepad++" 
     $installPath = "$codePath\Notepad++\notepad++.exe"
-    $uri = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.6/npp.8.4.6.Installer.x64.exe"
+    $uri = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5.6/npp.8.5.6.Installer.x64.exe"
     
     InstallIfRequired -appName $appName -installPath $installPath -Uri $uri
 }
@@ -131,7 +131,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
 if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     $appName = "Postman" 
     $installPath = "$env:LOCALAPPDATA\Postman\postman.exe"
-    $uri = "https://cdn.fork.dev/win/Fork-1.83.1.exe"
+    $uri = "https://dl.pstmn.io/download/latest/win64"
     
     InstallIfRequired -appName $appName -installPath $installPath -Uri $uri
 }
@@ -216,7 +216,7 @@ if ($VSCode.IsPresent -or $All.IsPresent) {
                 Write-Host "`n$appName is already installed." -ForegroundColor Yellow
             }
 
-            $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + @("vue.vscode-typescript-vue-plugin") + @("sdras.vue-vscode-snippets") + @("dariofuzinato.vue-peek") + $AdditionalExtensions
+            $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + $AdditionalExtensions
             foreach ($extension in $extensions) {
                 & $codeCmdPath -ArgumentList --install-extension $extension --force
             }
@@ -283,7 +283,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     $appName = "CascadiaCode"
     if (!(Test-Path "C:\Windows\Fonts\Caskaydia Cove Nerd Font Book.ttf")) {
         Write-Host "Downloading $appName"
-        Invoke-WebRequest -Uri https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip?WT.mc_id=-blog-scottha -OutFile .\$appName.zip
+        Invoke-WebRequest -Uri https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip -OutFile .\$appName.zip
         Write-Host "Installing $appName"
         Expand-Archive -LiteralPath .\$appName.zip -DestinationPath .\$appName\ -Force
         Remove-Item .\$appName.zip
