@@ -216,7 +216,7 @@ if ($VSCode.IsPresent -or $All.IsPresent) {
                 Write-Host "`n$appName is already installed." -ForegroundColor Yellow
             }
 
-            $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + $AdditionalExtensions
+            $extensions = @("ms-azuretools.vscode-bicep") + @("ms-vscode.powershell") + @("ms-dotnettools.csharp") + @("christian-kohler.npm-intellisense") + @("ms-azuretools.vscode-docker") + @("github.vscode-github-actions") + $AdditionalExtensions
             foreach ($extension in $extensions) {
                 & $codeCmdPath -ArgumentList --install-extension $extension --force
             }
