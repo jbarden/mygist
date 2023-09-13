@@ -1,6 +1,6 @@
 # mygist
 
-# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+# Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
 
 Setup new PC / Update existing PC
 
