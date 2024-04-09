@@ -273,6 +273,7 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
         Write-Host "Installing $appName"
         Install-Module -Name Terminal-Icons -Repository PSGallery
         winget install Microsoft.PowerShell
+		winget install JanDeDobbeleer.OhMyPosh
         Write-Host "Installed $appName" -ForegroundColor Green
         Write-Host "Please remember to set $appName as the default profile in Terminal!!!" -ForegroundColor Green
     }
