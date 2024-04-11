@@ -157,6 +157,7 @@ if ($Bootstrap.IsPresent -or $All.IsPresent) {
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     if (-not (Get-Module -Name PSDepend -ListAvailable)) {
         Write-Host "`nInstalling PSDepend..."
+        Connect-AzAccount
         Install-Module -Name PSDepend -Repository PSGallery
     }
 
