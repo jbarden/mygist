@@ -243,7 +243,7 @@ if ($AzureCLI.IsPresent -or $All.IsPresent) {
 
 if ($CreateDirectories.IsPresent -or $All.IsPresent) {
     Write-Host "Creating default directories..."
-    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\repos\mine", "c:\repos\work")
+    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\logs", "c:\local-nuget", "c:\repos\mine", "c:\repos\work")
     foreach ($directory in $DefaultDirectories) {
         if (!(Test-Path $directory)) {
             Write-Host "$($directory) does not exist...creating"
