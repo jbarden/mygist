@@ -51,6 +51,32 @@ Param
 
 $ErrorActionPreference = 'Stop'
 
+if ($CreateDirectories.IsPresent -or $All.IsPresent) {
+    Write-Host "Creating default directories..."
+    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\logs", "c:\local-nuget", "c:\repos\mine", "c:\repos\work")
+    foreach ($directory in $DefaultDirectories) {
+        if (!(Test-Path $directory)) {
+            Write-Host "$($directory) does not exist...creating"
+            New-Item -Path $directory -ItemType Directory
+        }
+        else {
+            Write-Host "$($directory) exists...moving on" -ForegroundColor Green
+        }
+    }
+    
+    Write-Host "Creating additional directories (if specified)..."
+    foreach ($directory in $Directories) {
+        if (!(Test-Path $directory)) {
+            Write-Host "$($directory) does not exist...creating"
+            New-Item -Path $directory -ItemType Directory
+        }
+        else {
+            Write-Host "$($directory) exists...moving on" -ForegroundColor Green
+        }
+    }
+    Write-Host "CreateDirectories completed" -ForegroundColor Green
+}
+
 function InstallIfRequired {
     param (
         $appName, $installPath, $uri
@@ -157,6 +183,7 @@ if ($Bootstrap.IsPresent -or $All.IsPresent) {
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     if (-not (Get-Module -Name PSDepend -ListAvailable)) {
         Write-Host "`nInstalling PSDepend..."
+        Connect-AzAccount
         Install-Module -Name PSDepend -Repository PSGallery
     }
 
@@ -242,7 +269,7 @@ if ($AzureCLI.IsPresent -or $All.IsPresent) {
 
 if ($CreateDirectories.IsPresent -or $All.IsPresent) {
     Write-Host "Creating default directories..."
-    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\repos\mine", "c:\repos\work")
+    $DefaultDirectories = @("c:\temp", "c:\repos", "c:\logs", "c:\local-nuget", "c:\repos\mine", "c:\repos\work")
     foreach ($directory in $DefaultDirectories) {
         if (!(Test-Path $directory)) {
             Write-Host "$($directory) does not exist...creating"
