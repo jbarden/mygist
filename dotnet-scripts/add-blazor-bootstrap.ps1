@@ -62,14 +62,15 @@ process{
     Write-Output "Updated _Imports.razor." | WriteColour("Green")
     
     Write-Output "Updating program.cs." | WriteColour("magenta")
+
     $filePath = "$($UIProjectFolder)\program.cs"
+
+    $textToReplace = "var app = builder.Build();"
+    $newText = "builder.Services.AddBlazorBootstrap();
+var app = builder.Build();"
+    
     $fileContent = Get-Content -Path $filePath
-    $fileContent
-    $textToReplace = 'var app = builder.Build();'
-    $newText = 'builder.Services.AddBlazorBootstrap();
-    var app = builder.Build();'
-    $fileContent = $fileContent -replace $textToReplace, $newText
-    $fileContent
+    $fileContent = $fileContent.Replace($textToReplace, $newText)
     
     $fileContent | Set-Content -Path $filePath
     Write-Output "Updated program.cs." | WriteColour("Green")
