@@ -80,7 +80,7 @@ var app = builder.Build();"
     $fileContent | Set-Content -Path $filePath
     Write-Output "Updated program.cs." | WriteColour("Green")
 
-    Write-Output "Copying Layout and NavMenu files." | WriteColour("DarkMagenta")
+    Write-Output "Copying Layout and NavMenu files from $(Get-Location) to $($($UIProjectFolder))\components\Layout\." | WriteColour("DarkMagenta")
     xcopy .\components\Layout\*.* "$($($UIProjectFolder))\components\Layout\" /Y
     Write-Output "Completed copying Layout and NavMenu files." | WriteColour("Green")
 }

@@ -19,15 +19,34 @@ process{
     Remove-Item "$($BaseDirectory)\*" -Include *.development.json -Recurse
     Write-Output "Removed the *.development.json files." | WriteColour("Green")
 
-    Write-Output "Updating the $($APIProjectPath)\Program.cs file." | WriteColour("DarkMagenta")
     $filePath = "$($APIProjectPath)\Program.cs"
+    Write-Output "Updating the $($filePath) file." | WriteColour("DarkMagenta")
+    $fileContent = Get-Content -Path $filePath
     
-    $textToReplace = 'app.UseHttpsRedirection();'
+    $fileContent = $fileContent -replace 'app.UseHttpsRedirection();', ''
+
+    $textToReplace = "var app = builder.Build();"
+    $newText = "_ = builder.Services.AddGlobalExceptionHandler();
+var app = builder.Build();"
+    
+    $fileContent = $fileContent.Replace($textToReplace, $newText)
+    
+    @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    
+    Write-Output "Updated the $($filePath) file." | WriteColour("DarkMagenta")
+
+    $filePath = "$($UIProjectPath)\Program.cs"
+    Write-Output "Updating the $($filePath) file." | WriteColour("DarkMagenta")
     $fileContent = Get-Content -Path $filePath
 
-    $fileContent = $fileContent.Replace($textToReplace, '')
-    $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated the $($APIProjectPath)\Program.cs file." | WriteColour("Green")
+    $textToReplace = "var app = builder.Build();"
+    $newText = "_ = builder.Services.AddGlobalExceptionHandler();
+var app = builder.Build();"
+    $fileContent = $fileContent.Replace($textToReplace, $newText)
+
+    @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+
+    Write-Output "Updated the $($filePath) file." | WriteColour("DarkMagenta")
 
     & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
     & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
