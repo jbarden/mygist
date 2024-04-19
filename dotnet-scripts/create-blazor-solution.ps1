@@ -180,6 +180,10 @@ process {
         & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
         & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($APIProjectName)")
         & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
+
+        Remove-Item $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\UnitTest1.cs") -Force
+        xcopy .\ArchitectureLayersShould.cs $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests") /Y
+        & "$PSScriptRoot\update-architecture-tests-project.ps1" -ProjectFolder $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests") -ArchitectureTestNamespace "$($SolutionName).Architecture.Tests" -UIProjectName "$($UIProjectName)" -APIProjectName "$($APIProjectName)" -DomainProjectName "$($DomainProjectName)" -InfrastructureProjectName "$($InfrastructureProjectName)"
         
         Write-Output "Running code cleanup - started at $(Get-Date)." | WriteColour("Magenta")
         & 'dotnet' 'format' $SolutionFileWithPath
