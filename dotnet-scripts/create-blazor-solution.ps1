@@ -15,16 +15,18 @@ Param (
 )
 
 begin {
+    $startTime = Get-Date
     $StartingFolder = Get-Location
     $SolutionFile = "$($SolutionName).sln"
     $SolutionNameAsPath = $SolutionName.Replace(".", "-").ToLower()
     $BaseSolutionDirectory = "$($RootDirectory)\$($SolutionNameAsPath)"
+    $SourceDirectory = "$($BaseSolutionDirectory)\src"
     $SolutionFileWithPath = "$($BaseSolutionDirectory)\$($SolutionFile)"
     $UIProjectName = "$($SolutionName).UI"
     $APIProjectName = "$($SolutionName).API"
     $DomainProjectName = "$($SolutionName).Domain"
     $InfrastructureProjectName = "$($SolutionName).Infrastructure"
-    $startTime = Get-Date
+    $UIDirectory = "$($SourceDirectory)\ui\$($UIProjectName)"
 
     function WriteColour($colour) {
         process { Write-Host $_ -ForegroundColor $colour }
@@ -40,10 +42,10 @@ process {
         }
 
         Write-Output "Starting directory creation." | WriteColour("Magenta")
-        mkdir "$($BaseSolutionDirectory)\src"
-        mkdir "$($BaseSolutionDirectory)\src\ui"
-        mkdir "$($BaseSolutionDirectory)\src\api"
-        mkdir "$($BaseSolutionDirectory)\src\core"
+        mkdir "$($SourceDirectory)"
+        mkdir "$($SourceDirectory)\ui"
+        mkdir "$($SourceDirectory)\api"
+        mkdir "$($SourceDirectory)\core"
         mkdir "$($BaseSolutionDirectory)\tests\unit"
         mkdir "$($BaseSolutionDirectory)\tests\integration"
         mkdir "$($BaseSolutionDirectory)\tests\acceptance"
@@ -59,94 +61,94 @@ process {
         Write-Output "Creating the solution file." | WriteColour("Magenta")
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"
         Write-Output "Creating the UI project." | WriteColour("Magenta")
-        dotnet new blazor --name "$($UIProjectName)" --output "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)\$($UIProjectName).csproj" package --no-restore Blazor.Bootstrap --version "2.2.0"
-        dotnet add "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)\$($UIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
-        dotnet add "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)\$($UIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
+        dotnet new blazor --name "$($UIProjectName)" --output "$($UIDirectory)"
+        dotnet sln "$($SolutionFileWithPath)" add "$($UIDirectory)"
+        dotnet add "$($UIDirectory)\$($UIProjectName).csproj" package --no-restore Blazor.Bootstrap --version "2.2.0"
+        dotnet add "$($UIDirectory)\$($UIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
+        dotnet add "$($UIDirectory)\$($UIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
         Write-Output "Created the UI project." | WriteColour("Green")
         
         Write-Output "Creating the API project." | WriteColour("Magenta")
-        dotnet new webapi --name "$($APIProjectName)" --output "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\src\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
-        dotnet add "$($BaseSolutionDirectory)\src\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
+        dotnet new webapi --name "$($APIProjectName)" --output "$($SourceDirectory)\api\$($APIProjectName)"
+        dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\api\$($APIProjectName)"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
         Write-Output "Created the API project." | WriteColour("Green")
         
         Write-Output "Creating the Domain project." | WriteColour("Magenta")
-        dotnet new classlib --name "$($DomainProjectName)" --output "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\src\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
+        dotnet new classlib --name "$($DomainProjectName)" --output "$($SourceDirectory)\core\$($DomainProjectName)"
+        dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\core\$($DomainProjectName)"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
         Write-Output "Created the Domain project." | WriteColour("Green")
         
         Write-Output "Creating the Infrastructure project." | WriteColour("Magenta")
-        dotnet new classlib --name "$($InfrastructureProjectName)" --output "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\src\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)\$($InfrastructureProjectName).csproj" reference "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
+        dotnet new classlib --name "$($InfrastructureProjectName)" --output "$($SourceDirectory)\core\$($InfrastructureProjectName)"
+        dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\core\$($InfrastructureProjectName)"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
+        dotnet add "$($SourceDirectory)\core\$($InfrastructureProjectName)\$($InfrastructureProjectName).csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
         Write-Output "Created the Infrastructure project." | WriteColour("Green")
         
         Write-Output "Creating the UI Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($UIProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests\$($UIProjectName).Unit.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests\$($UIProjectName).Unit.Tests.csproj" reference "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests\$($UIProjectName).Unit.Tests.csproj" reference "$($UIDirectory)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests"
         Write-Output "Created the UI Unit Tests project." | WriteColour("Green")
         
         Write-Output "Creating the API Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($APIProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($APIProjectName).Unit.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\unit\$($APIProjectName).Unit.Tests\$($APIProjectName).Unit.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($APIProjectName).Unit.Tests\$($APIProjectName).Unit.Tests.csproj" reference "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($APIProjectName).Unit.Tests\$($APIProjectName).Unit.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\unit\$($APIProjectName).Unit.Tests"
         Write-Output "Created the API Unit Tests project." | WriteColour("Green")
         
         Write-Output "Creating the Domain Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($DomainProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($DomainProjectName).Unit.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\unit\$($DomainProjectName).Unit.Tests\$($DomainProjectName).Unit.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($DomainProjectName).Unit.Tests\$($DomainProjectName).Unit.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($DomainProjectName).Unit.Tests\$($DomainProjectName).Unit.Tests.csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\unit\$($DomainProjectName).Unit.Tests"
         Write-Output "Created the Domain Unit Tests project." | WriteColour("Green")
         
         Write-Output "Creating the Infrastructure Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($InfrastructureProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($InfrastructureProjectName).Unit.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\unit\$($InfrastructureProjectName).Unit.Tests\$($InfrastructureProjectName).Unit.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($InfrastructureProjectName).Unit.Tests\$($InfrastructureProjectName).Unit.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\unit\$($InfrastructureProjectName).Unit.Tests\$($InfrastructureProjectName).Unit.Tests.csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\unit\$($InfrastructureProjectName).Unit.Tests"
         Write-Output "Created the Infrastructure Unit Tests project." | WriteColour("Green")
         
         Write-Output "Creating the UI Integration Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($UIProjectName).Integration.Tests" --output "$($BaseSolutionDirectory)\tests\integration\$($UIProjectName).Integration.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\integration\$($UIProjectName).Integration.Tests\$($UIProjectName).Integration.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\integration\$($UIProjectName).Integration.Tests\$($UIProjectName).Integration.Tests.csproj" reference "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\integration\$($UIProjectName).Integration.Tests\$($UIProjectName).Integration.Tests.csproj" reference "$($UIDirectory)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\integration\$($UIProjectName).Integration.Tests"
         Write-Output "Created the UI Integration Tests project." | WriteColour("Green")
         
         Write-Output "Creating the UI Acceptance Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($UIProjectName).Acceptance.Tests" --output "$($BaseSolutionDirectory)\tests\acceptance\$($UIProjectName).Acceptance.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($UIProjectName).Acceptance.Tests\$($UIProjectName).Acceptance.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($UIProjectName).Acceptance.Tests\$($UIProjectName).Acceptance.Tests.csproj" reference "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($UIProjectName).Acceptance.Tests\$($UIProjectName).Acceptance.Tests.csproj" reference "$($UIDirectory)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\acceptance\$($UIProjectName).Acceptance.Tests"
         Write-Output "Created the UI Acceptance Tests project." | WriteColour("Green")
         
         Write-Output "Creating the API Acceptance Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($APIProjectName).Acceptance.Tests" --output "$($BaseSolutionDirectory)\tests\acceptance\$($APIProjectName).Acceptance.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($APIProjectName).Acceptance.Tests\$($APIProjectName).Acceptance.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($APIProjectName).Acceptance.Tests\$($APIProjectName).Acceptance.Tests.csproj" reference "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\acceptance\$($APIProjectName).Acceptance.Tests\$($APIProjectName).Acceptance.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\acceptance\$($APIProjectName).Acceptance.Tests"
         Write-Output "Created the API Acceptance Tests project." | WriteColour("Green")
         
         dotnet new xunit --name "$($APIProjectName).Integration.Tests" --output "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests\$($APIProjectName).Integration.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests\$($APIProjectName).Integration.Tests.csproj" reference "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests\$($APIProjectName).Integration.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests"
         
         Write-Output "Creating the Architecture Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($SolutionName).Architecture.Tests" --output "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($UIDirectory)"
+        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
+        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
         dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore TngTech.ArchUnitNET.xUnit --version "0.10.6"
         Write-Output "Created the Architecture Tests project." | WriteColour("Green")
@@ -175,8 +177,9 @@ process {
             }
         }
         
-        & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
-        & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($BaseSolutionDirectory)\src\api\$($APIProjectName)")
+        & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
+        & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($APIProjectName)")
+        & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
         
         Write-Output "Running code cleanup - started at $(Get-Date)." | WriteColour("Magenta")
         & 'dotnet' 'format' $SolutionFileWithPath
