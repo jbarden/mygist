@@ -134,6 +134,7 @@ process {
     dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($DomainProjectName)"
     dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($BaseSolutionDirectory)\src\core\$($InfrastructureProjectName)"
     dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
+    dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore TngTech.ArchUnitNET.xUnit    
     Write-Output "Created the Architecture Tests project." | WriteColour("Green")
     
     if($restore){
