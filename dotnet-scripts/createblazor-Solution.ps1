@@ -7,7 +7,9 @@ Param (
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
     [Parameter(HelpMessage='Controls whether to run the update and NuGet restore.')]
-    [bool]$restore = $false
+    [bool]$Restore = $false,
+    [Parameter(HelpMessage='Controls whether to run the update and NuGet restore.')]
+    [bool]$Redeploy = $false
 )
 
 begin {
@@ -28,6 +30,11 @@ begin {
 }
 
 process {
+    if($Redeploy) {
+        Write-Output "Removing the previous version located at $($BaseSolutionDirectory)." | WriteColour("DarkMagenta")
+        remove-item $($BaseSolutionDirectory) -recurse -force
+        Write-Output "Removed the previous version located at $($BaseSolutionDirectory)." | WriteColour("Green")
+    }
 
     Write-Output "Starting directory creation." | WriteColour("DarkMagenta")
     mkdir "$($BaseSolutionDirectory)\src"
@@ -136,8 +143,8 @@ process {
     dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
     dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore TngTech.ArchUnitNET.xUnit    
     Write-Output "Created the Architecture Tests project." | WriteColour("Green")
-    
-    if($restore){
+
+    if($Restore){
         Set-Location "$($BaseSolutionDirectory)"
         
         dotnet restore "$($SolutionFileWithPath)"
@@ -162,6 +169,7 @@ process {
     }
 
     & "$PSScriptRoot\add-blazor-bootstrap.ps1" -UIProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+    & "$PSScriptRoot\update-ui-and-api-projects.ps1" -BaseDirectory "$($BaseSolutionDirectory)\src" -UIProjectPath $("$($BaseSolutionDirectory)\src\ui\$($UIProjectName)") -APIProjectPath $("$($BaseSolutionDirectory)\src\api\$($APIProjectName)")
 }
 
 end {

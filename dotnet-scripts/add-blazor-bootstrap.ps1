@@ -1,6 +1,6 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory of the UI Project, not the overarching root directory for the new solution.')]
     [string]$UIProjectFolder
 )
 
@@ -58,13 +58,13 @@ process{
     remove-item $bootstrapFolder -recurse -force
     Write-Output "Updated app.razor." | WriteColour("Green")
     
-    Write-Output "Updating _Imports.razor." | WriteColour("magenta")
+    Write-Output "Updating the $($UIProjectFolder)\components\_Imports.razor file." | WriteColour("magenta")
     $filePath = "$($UIProjectFolder)\components\_Imports.razor"
     $fileContent = Get-Content -Path $filePath
     $fileContent = $fileContent +'@using BlazorBootstrap;
 '
     $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated _Imports.razor." | WriteColour("Green")
+    Write-Output "Updated the $($UIProjectFolder)\components\_Imports.razor file." | WriteColour("Green")
     
     Write-Output "Updating program.cs." | WriteColour("magenta")
 
