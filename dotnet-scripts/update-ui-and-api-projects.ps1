@@ -28,6 +28,9 @@ process{
     $fileContent = $fileContent.Replace($textToReplace, '')
     $fileContent | Set-Content -Path $filePath
     Write-Output "Updated the $($APIProjectPath)\Program.cs file." | WriteColour("Green")
+
+    & "$PSScriptRoot\replace-text.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+    & "$PSScriptRoot\replace-text.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
 }
 
 end {
