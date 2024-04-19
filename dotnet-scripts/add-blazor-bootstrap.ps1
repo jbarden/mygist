@@ -29,6 +29,11 @@ process{
     <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />'
     
     $fileContent = $fileContent -replace $textToReplace, $newText
+
+    $textToReplace = '<Routes />'
+    $newText = '<Routes @rendermode="InteractiveServer" />'
+    
+    $fileContent = $fileContent -replace $textToReplace, $newText
     
     $textToReplace = '<script src="_framework/blazor.web.js"></script>'
     $newText = '<script src="_framework/blazor.web.js"></script>
@@ -56,8 +61,8 @@ process{
     Write-Output "Updating _Imports.razor." | WriteColour("magenta")
     $filePath = "$($UIProjectFolder)\components\_Imports.razor"
     $fileContent = Get-Content -Path $filePath
-    $fileContent = $fileContent +'
-    @using BlazorBootstrap;'
+    $fileContent = $fileContent +'@using BlazorBootstrap;
+'
     $fileContent | Set-Content -Path $filePath
     Write-Output "Updated _Imports.razor." | WriteColour("Green")
     
@@ -76,7 +81,7 @@ var app = builder.Build();"
     Write-Output "Updated program.cs." | WriteColour("Green")
 
     Write-Output "Copying Layout and NavMenu files." | WriteColour("DarkMagenta")
-    xcopy .\components\Layout\*.* $BaseSolutionDirectory\components\Layout\ /Y
+    xcopy .\components\Layout\*.* "$($($UIProjectFolder))\components\Layout\" /Y
     Write-Output "Completed copying Layout and NavMenu files." | WriteColour("Green")
 }
 
