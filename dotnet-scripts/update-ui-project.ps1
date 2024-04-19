@@ -1,7 +1,7 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory of the UI Project, not the overarching root directory for the new solution.')]
-    [string]$UIProjectFolder
+    [string]$ProjectFolder
 )
 
 begin {
@@ -11,10 +11,15 @@ begin {
 }
 
 process{
-    Write-Output "Starting project updates for Blazor Bootstrap." | WriteColour("magenta")
-    Write-Output "Updating app.razor." | WriteColour("magenta")
+    Write-Output "Starting UI Project updates." | WriteColour("Magenta")
     
-    $filePath = "$($UIProjectFolder)\components\app.razor"
+    Write-Output "Removing the *.development.json file." | WriteColour("Magenta")
+    Remove-Item "$($ProjectFolder)\*" -Include *.development.json -Recurse
+    Write-Output "Removed the *.development.json file." | WriteColour("Green")
+
+    Write-Output "Updating app.razor." | WriteColour("Magenta")
+    
+    $filePath = "$($ProjectFolder)\components\app.razor"
     
     $textToReplace = '<html lang="en">'
     $newText = '<html lang="en" data-bs-theme="dark">'
@@ -53,36 +58,37 @@ process{
     $fileContent = $fileContent -replace $textToReplace, ''
     
     $fileContent | Set-Content -Path $filePath
-    
-    $bootstrapFolder = "$($UIProjectFolder)\wwwroot\bootstrap"
-    remove-item $bootstrapFolder -recurse -force
     Write-Output "Updated app.razor." | WriteColour("Green")
     
-    Write-Output "Updating the $($UIProjectFolder)\components\_Imports.razor file." | WriteColour("magenta")
-    $filePath = "$($UIProjectFolder)\components\_Imports.razor"
-    $fileContent = Get-Content -Path $filePath
-    $fileContent = $fileContent +'@using BlazorBootstrap;
-'
-    $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated the $($UIProjectFolder)\components\_Imports.razor file." | WriteColour("Green")
-    
-    Write-Output "Updating program.cs." | WriteColour("magenta")
+    $bootstrapFolder = "$($ProjectFolder)\wwwroot\bootstrap"
+    remove-item $bootstrapFolder -recurse -force
 
-    $filePath = "$($UIProjectFolder)\program.cs"
+    $filePath = "$($ProjectFolder)\components\_Imports.razor"
+    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    @("@using BlazorBootstrap;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    Write-Output "Updated the $($filePath) file." | WriteColour("Green")
 
+    $filePath = "$($ProjectFolder)\program.cs"    
+    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
     $textToReplace = "var app = builder.Build();"
     $newText = "builder.Services.AddBlazorBootstrap();
+builder.Services.AddGlobalExceptionHandler();
 var app = builder.Build();"
     
     $fileContent = Get-Content -Path $filePath
     $fileContent = $fileContent.Replace($textToReplace, $newText)
+    $fileContent = $fileContent.Replace("// Add services to the container.", "")
+    $fileContent = $fileContent.Replace("// Configure the HTTP request pipeline.", "")
+    $fileContent = $fileContent.Replace("// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.", "")
     
     $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated program.cs." | WriteColour("Green")
+    @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    Write-Output "Updated the $($filePath) file." | WriteColour("Green")
 
-    Write-Output "Copying Layout and NavMenu files from $(Get-Location) to $($($UIProjectFolder))\components\Layout\." | WriteColour("DarkMagenta")
-    xcopy .\components\Layout\*.* "$($($UIProjectFolder))\components\Layout\" /Y
+    Write-Output "Copying Layout and NavMenu files to $($ProjectFolder)\components\Layout\." | WriteColour("Magenta")
+    xcopy ".\components\Layout\*.*" "$($($ProjectFolder))\components\Layout\" /Y
     Write-Output "Completed copying Layout and NavMenu files." | WriteColour("Green")
+    & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($ProjectFolder)"
 }
 
 end {

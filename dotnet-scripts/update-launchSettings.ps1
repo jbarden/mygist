@@ -12,7 +12,7 @@ begin {
 
 process {
     $filePath = "$($ProjectFolder)\Properties\launchSettings.json"
-    Write-Output "Updating the $($filePath) file." | WriteColour("DarkMagenta")
+    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
 
     $fileContent = Get-Content -Path $filePath | ConvertFrom-Json -Depth 10
 

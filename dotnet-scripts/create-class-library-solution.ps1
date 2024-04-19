@@ -50,7 +50,7 @@ ForEach ($file in get-childitem . -recurse | Where-Object {$_.extension -like "*
     
     ForEach ($package in $packages)
     {
-        write-host "Update $file package :$package"  -foreground 'magenta'
+        write-host "Update $file package :$package"  -foreground 'Magenta'
         $fullName = $file.FullName
         Invoke-Expression "dotnet add $fullName package $package"
     }
