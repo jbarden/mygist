@@ -29,8 +29,8 @@ process{
     $fileContent | Set-Content -Path $filePath
     Write-Output "Updated the $($APIProjectPath)\Program.cs file." | WriteColour("Green")
 
-    & "$PSScriptRoot\replace-text.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
-    & "$PSScriptRoot\replace-text.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
+    & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"
+    & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"
 }
 
 end {
