@@ -23,10 +23,12 @@ begin {
     $SourceDirectory = "$($BaseSolutionDirectory)\src"
     $SolutionFileWithPath = "$($BaseSolutionDirectory)\$($SolutionFile)"
     $UIProjectName = "$($SolutionName).UI"
+    $HealthChecksProjectName = "$($SolutionName).HealthChecks"
     $APIProjectName = "$($SolutionName).API"
     $DomainProjectName = "$($SolutionName).Domain"
     $InfrastructureProjectName = "$($SolutionName).Infrastructure"
     $UIDirectory = "$($SourceDirectory)\ui\$($UIProjectName)"
+    $HealthChecksDirectory = "$($SourceDirectory)\core\$($HealthChecksProjectName)"
 
     function WriteColour($colour) {
         process { Write-Host $_ -ForegroundColor $colour }
@@ -86,6 +88,15 @@ process {
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
         dotnet add "$($SourceDirectory)\core\$($InfrastructureProjectName)\$($InfrastructureProjectName).csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
         Write-Output "Created the Infrastructure project." | WriteColour("Green")
+        
+        Write-Output "Creating the Health Checks project." | WriteColour("Magenta")
+        dotnet new classlib --name "$($HealthChecksProjectName)" --output "$($SourceDirectory)\core\$($HealthChecksProjectName)"
+        dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\core\$($HealthChecksProjectName)"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($HealthChecksProjectName)"
+        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.AspNetCore.Http.Abstractions --version "2.1.1"
+        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions --version "7.0.5"
+        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.Extensions.Features --version "7.0.7"
+        Write-Output "Created the Health Checks project." | WriteColour("Green")
         
         Write-Output "Creating the UI Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($UIProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests"
@@ -166,6 +177,7 @@ process {
         }
         
         & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
+        & "$PSScriptRoot\update-healthchecks-project.ps1" -ProjectFolder "$($HealthChecksDirectory)" -SolutionName $($SolutionName)
         & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($APIProjectName)")
         & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
 

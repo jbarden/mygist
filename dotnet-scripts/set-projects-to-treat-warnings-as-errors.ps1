@@ -21,12 +21,13 @@ process {
     $newText
 
     foreach ($filePath in $projectFiles) {
-        Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+        Write-Output "Updating the $($filePath) file to treat warnings as errors." | WriteColour("Magenta")
         $fileContent = Get-Content -Path $filePath
         $textToReplace = "</Project>"
         
         $fileContent = $fileContent.Replace($textToReplace, $newText)
         $fileContent | Set-Content -Path $filePath
+        Write-Output "Updated the $($filePath) file to treat warnings as errors." | WriteColour("Green")
     }
 }
 
