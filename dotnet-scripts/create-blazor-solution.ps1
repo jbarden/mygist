@@ -49,7 +49,6 @@ process {
         mkdir "$($BaseSolutionDirectory)\tests\unit"
         mkdir "$($BaseSolutionDirectory)\tests\integration"
         mkdir "$($BaseSolutionDirectory)\tests\acceptance"
-        mkdir "$($BaseSolutionDirectory)\tests\architecture"
         Write-Output "Completed directory creation." | WriteColour("Green")
         
         Write-Output "Copying files." | WriteColour("Magenta")
@@ -141,17 +140,6 @@ process {
         dotnet add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests\$($APIProjectName).Integration.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
         dotnet add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests\$($APIProjectName).Integration.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\integration\$($APIProjectName).Integration.Tests"
-        
-        Write-Output "Creating the Architecture Tests project." | WriteColour("Magenta")
-        dotnet new xunit --name "$($SolutionName).Architecture.Tests" --output "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\api\$($APIProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($UIDirectory)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests"
-        dotnet add "$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\$($SolutionName).Architecture.Tests.csproj" package --no-restore TngTech.ArchUnitNET.xUnit --version "0.10.6"
-        Write-Output "Created the Architecture Tests project." | WriteColour("Green")
 
         if($UpdateNuget){
             Set-Location "$($BaseSolutionDirectory)"
@@ -181,10 +169,6 @@ process {
         & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($APIProjectName)")
         & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
 
-        Remove-Item $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests\UnitTest1.cs") -Force
-        xcopy .\ArchitectureLayersShould.cs $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests") /Y
-        & "$PSScriptRoot\update-architecture-tests-project.ps1" -ProjectFolder $("$($BaseSolutionDirectory)\tests\architecture\$($SolutionName).Architecture.Tests") -ArchitectureTestNamespace "$($SolutionName).Architecture.Tests" -UIProjectName "$($UIProjectName)" -APIProjectName "$($APIProjectName)" -DomainProjectName "$($DomainProjectName)" -InfrastructureProjectName "$($InfrastructureProjectName)"
-        
         Write-Output "Running code cleanup - started at $(Get-Date)." | WriteColour("Magenta")
         & 'dotnet' 'format' $SolutionFileWithPath
         Write-Output "Completed code cleanup - finished at $(Get-Date)." | WriteColour("Magenta")
