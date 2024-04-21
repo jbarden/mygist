@@ -174,6 +174,7 @@ process {
                     Write-Output "Updated project: $($file.FullName), package: $package." | WriteColour("Green")
                 }
             }
+            Set-Location "$($StartingFolder)"
         }
         
         & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
