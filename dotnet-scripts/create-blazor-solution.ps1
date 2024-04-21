@@ -23,12 +23,10 @@ begin {
     $SourceDirectory = "$($BaseSolutionDirectory)\src"
     $SolutionFileWithPath = "$($BaseSolutionDirectory)\$($SolutionFile)"
     $UIProjectName = "$($SolutionName).UI"
-    $HealthChecksProjectName = "$($SolutionName).HealthChecks"
     $APIProjectName = "$($SolutionName).API"
     $DomainProjectName = "$($SolutionName).Domain"
     $InfrastructureProjectName = "$($SolutionName).Infrastructure"
     $UIDirectory = "$($SourceDirectory)\ui\$($UIProjectName)"
-    $HealthChecksDirectory = "$($SourceDirectory)\core\$($HealthChecksProjectName)"
 
     function WriteColour($colour) {
         process { Write-Host $_ -ForegroundColor $colour }
@@ -54,6 +52,7 @@ process {
         Write-Output "Completed directory creation." | WriteColour("Green")
         
         Write-Output "Copying files." | WriteColour("Magenta")
+        xcopy .\nuget.config "$($SourceDirectory)\api\$($APIProjectName)" /Y
         xcopy .\.editorconfig $BaseSolutionDirectory /Y
         xcopy .\CodeMaid.config $BaseSolutionDirectory /Y
         xcopy .\.git* $BaseSolutionDirectory /Y
@@ -74,6 +73,7 @@ process {
         dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.Api.HealthChecks --version "0.1.0-alpha"
         Write-Output "Created the API project." | WriteColour("Green")
         
         Write-Output "Creating the Domain project." | WriteColour("Magenta")
@@ -88,15 +88,6 @@ process {
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($InfrastructureProjectName)"
         dotnet add "$($SourceDirectory)\core\$($InfrastructureProjectName)\$($InfrastructureProjectName).csproj" reference "$($SourceDirectory)\core\$($DomainProjectName)"
         Write-Output "Created the Infrastructure project." | WriteColour("Green")
-        
-        Write-Output "Creating the Health Checks project." | WriteColour("Magenta")
-        dotnet new classlib --name "$($HealthChecksProjectName)" --output "$($SourceDirectory)\core\$($HealthChecksProjectName)"
-        dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\core\$($HealthChecksProjectName)"
-        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" reference "$($SourceDirectory)\core\$($HealthChecksProjectName)"
-        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.AspNetCore.Http.Abstractions --version "2.1.1"
-        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions --version "7.0.5"
-        dotnet add "$($SourceDirectory)\core\$($HealthChecksProjectName)\$($HealthChecksProjectName).csproj" package --no-restore Microsoft.Extensions.Features --version "7.0.7"
-        Write-Output "Created the Health Checks project." | WriteColour("Green")
         
         Write-Output "Creating the UI Unit Tests project." | WriteColour("Magenta")
         dotnet new xunit --name "$($UIProjectName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests"
@@ -178,13 +169,13 @@ process {
         }
         
         & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
-        & "$PSScriptRoot\update-healthchecks-project.ps1" -ProjectFolder "$($HealthChecksDirectory)" -SolutionName $($SolutionName)
         & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($APIProjectName)")
         & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
 
         Write-Output "Running code cleanup - started at $(Get-Date)." | WriteColour("Magenta")
         & 'dotnet' 'format' $SolutionFileWithPath
         Write-Output "Completed code cleanup - finished at $(Get-Date)." | WriteColour("Magenta")
+        remove-item 'Class1.cs' -recurse -force
     }
     finally {
         Set-Location "$($StartingFolder)"
