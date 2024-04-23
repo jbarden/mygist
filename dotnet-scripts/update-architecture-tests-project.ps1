@@ -15,16 +15,14 @@ Param (
 )
 
 begin {
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
+    
 }
 
 process{    
-    Write-Output "Updating $($ProjectFolder)." | WriteColour("Magenta")
+    WriteColour -Message "Updating $($ProjectFolder)." -Colour "Magenta"
 
     $filePath = "$($ProjectFolder)\ArchitectureLayersShould.cs"
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
     $fileContent = Get-Content -Path $filePath
     
     $fileContent = $fileContent.Replace("{ArchitectureNamespace}", "$($ArchitectureTestNamespace)")
@@ -35,9 +33,9 @@ process{
     
     $fileContent | Set-Content -Path $filePath
     
-    Write-Output "Updated the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Magenta"
 }
 
 end {
-    Write-Output "Completed project updates for Blazor Bootstrap." | WriteColour("Green")
+    WriteColour -Message "Completed project updates for Blazor Bootstrap." -Colour "Green"
 }

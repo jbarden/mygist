@@ -5,27 +5,26 @@ Param (
 )
 
 begin {
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
 }
 
 process{    
-    Write-Output "Removing the *.development.json file." | WriteColour("Magenta")
+    WriteColour -Message "Removing the *.development.json file." -Colour "Magenta"
     Remove-Item "$($ProjectFolder)\*" -Include *.development.json -Recurse
-    Write-Output "Removed the *.development.json file." | WriteColour("Green")
+    WriteColour -Message "Removed the *.development.json file." -Colour "Green"
 
     $filePath = "$($ProjectFolder)\Program.cs"
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
     $fileContent = Get-Content -Path $filePath
     
     $fileContent = $fileContent.Replace("// Add services to the container.", "")
     $fileContent = $fileContent.Replace("// Configure the HTTP request pipeline.", "")
     $fileContent = $fileContent.Replace("// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle", "")
     $fileContent = $fileContent.Replace("app.UseHttpsRedirection();", "")
-    
+ 
     $textToReplace = "var app = builder.Build();"
-    $newText = "_ = builder.Services.AddGlobalExceptionHandler();
+    $newText = "_ = builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+_ = builder.UseSerilogLogging();
+
 var app = builder.Build();"
     
     $fileContent = $fileContent.Replace($textToReplace, $newText)
@@ -34,13 +33,15 @@ var app = builder.Build();"
     ", "")
     $fileContent | Set-Content -Path $filePath
     
+    @("") + (Get-Content $($filePath)) | Set-Content $($filePath)
     @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    @("using AStar.Logging.Extensions;") + (Get-Content $($filePath)) | Set-Content $($filePath)
     
-    Write-Output "Updated the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Magenta"
 
     & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($ProjectFolder)"
 }
 
 end {
-    Write-Output "Completed project updates for Blazor Bootstrap." | WriteColour("Green")
+    WriteColour -Message "Completed project updates for Blazor Bootstrap." -Colour "Green"
 }

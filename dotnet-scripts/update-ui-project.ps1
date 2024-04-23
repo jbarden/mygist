@@ -5,21 +5,18 @@ Param (
 )
 
 begin {
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
 }
 
 process{
-    Write-Output "Starting UI Project updates." | WriteColour("Magenta")
+    WriteColour -Message "Starting UI Project updates." -Colour "Magenta"
     
-    Write-Output "Removing the *.development.json file." | WriteColour("Magenta")
+    WriteColour -Message "Removing the *.development.json file." -Colour "Magenta"
     Remove-Item "$($ProjectFolder)\*" -Include *.development.json -Recurse
-    Write-Output "Removed the *.development.json file." | WriteColour("Green")
+    WriteColour -Message "Removed the *.development.json file." -Colour "Green"
 
-    Write-Output "Updating app.razor." | WriteColour("Magenta")
+    WriteColour -Message "Updating app.razor." -Colour "Magenta"
     
-    $filePath = "$($ProjectFolder)\components\app.razor"
+    $filePath = "$($ProjectFolder)\ui\components\app.razor"
     
     $textToReplace = '<html lang="en">'
     $newText = '<html lang="en" data-bs-theme="dark">'
@@ -58,18 +55,18 @@ process{
     $fileContent = $fileContent -replace $textToReplace, ''
     
     $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated app.razor." | WriteColour("Green")
+    WriteColour -Message "Updated app.razor." -Colour "Green"
     
     $bootstrapFolder = "$($ProjectFolder)\wwwroot\bootstrap"
     remove-item $bootstrapFolder -recurse -force
 
-    $filePath = "$($ProjectFolder)\components\_Imports.razor"
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    $filePath = "$($ProjectFolder)\ui\components\_Imports.razor"
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
     @("@using BlazorBootstrap;") + (Get-Content $($filePath)) | Set-Content $($filePath)
-    Write-Output "Updated the $($filePath) file." | WriteColour("Green")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Green"
 
     $filePath = "$($ProjectFolder)\program.cs"    
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
     $textToReplace = "var app = builder.Build();"
     $newText = "builder.Services.AddBlazorBootstrap();
 builder.Services.AddGlobalExceptionHandler();
@@ -83,14 +80,14 @@ var app = builder.Build();"
     
     $fileContent | Set-Content -Path $filePath
     @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
-    Write-Output "Updated the $($filePath) file." | WriteColour("Green")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Green"
 
-    Write-Output "Copying Layout and NavMenu files to $($ProjectFolder)\components\Layout\." | WriteColour("Magenta")
-    xcopy ".\components\Layout\*.*" "$($($ProjectFolder))\components\Layout\" /Y
-    Write-Output "Completed copying Layout and NavMenu files." | WriteColour("Green")
+    WriteColour -Message "Copying Layout and NavMenu files to $($ProjectFolder)\ui\components\Layout\." -Colour "Magenta"
+    xcopy ".\ui\components\Layout\*.*" "$($($ProjectFolder))\ui\components\Layout\" /Y
+    WriteColour -Message "Completed copying Layout and NavMenu files." -Colour "Green"
     & "$PSScriptRoot\update-launchSettings.ps1" -ProjectFolder "$($ProjectFolder)"
 }
 
 end {
-    Write-Output "Completed project updates for Blazor Bootstrap." | WriteColour("Green")
+    WriteColour -Message "Completed project updates for Blazor Bootstrap." -Colour "Green"
 }

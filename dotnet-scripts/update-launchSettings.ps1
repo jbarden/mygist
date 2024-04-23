@@ -5,14 +5,11 @@ Param (
 )
 
 begin {
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
 }
 
 process {
     $filePath = "$($ProjectFolder)\Properties\launchSettings.json"
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
 
     $fileContent = Get-Content -Path $filePath | ConvertFrom-Json -Depth 10
 
@@ -25,7 +22,7 @@ process {
 
     $fileContent = $fileContent | ConvertTo-Json -Depth 10
     $fileContent | Set-Content -Path $filePath
-    Write-Output "Updated the $($filePath) file." | WriteColour("Green")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Green"
 }
 
 end {
