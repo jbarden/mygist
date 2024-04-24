@@ -55,7 +55,7 @@ process {
         WriteColour -Message "Creating the API project." -Colour "Magenta"
         dotnet new webapi --name "$($APIProjectName)" --output "$($SourceDirectory)\api\$($APIProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($SourceDirectory)\api\$($APIProjectName)"
-        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.2.0"
+        dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.ASPNet.Extensions --version "0.3.1"
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.CodeGenerators --version "0.2.0"
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.Api.HealthChecks --version "0.1.0-alpha"
         dotnet add "$($SourceDirectory)\api\$($APIProjectName)\$($APIProjectName).csproj" package --no-restore AStar.Logging.Extensions --version "0.1.0"
@@ -160,7 +160,7 @@ process {
         WriteColour -Message "Running code cleanup - started at $(Get-Date)." -Colour "Magenta"
         & 'dotnet' 'format' $SolutionFileWithPath
         WriteColour -Message "Completed code cleanup - finished at $(Get-Date)." -Colour "Magenta"
-        remove-item 'Class1.cs' -recurse -force
+        remove-item '$($BaseSolutionDirectory)\Class1.cs' -recurse -force
     }
     finally {
         Set-Location "$($StartingFolder)"
