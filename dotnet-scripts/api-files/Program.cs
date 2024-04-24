@@ -1,10 +1,5 @@
-using System.IO.Abstractions;
-using System.Text.Json.Serialization;
-using AStar.ASPNet.Extensions.Handlers;
 using AStar.ASPNet.Extensions.PipelineExtensions;
 using AStar.ASPNet.Extensions.ServiceCollectionExtensions;
-using AStar.Clean.V1.Files.API.Services;
-using AStar.Infrastructure.Data;
 
 namespace {ApiProjectName};
 
@@ -20,15 +15,20 @@ public static class Program
 
         var app = builder.Build();
         _ = app.ConfigurePipeline();
+        ConfigurePipeline(app);
 
         app.Run();
     }
 
-    private static void ConfigureServices(IServiceCollection services)
+    private static IServiceCollection ConfigureServices(IServiceCollection services)
     {
-        _ = services.AddDbContext<FilesContext>();
-        _ = services.AddSwaggerGenNewtonsoftSupport();
-        _ = services.AddSingleton<IFileSystem, FileSystem>()
-                    .AddSingleton<IImageService, ImageService>();
+        // Additional configuration can be performed here
+        return services;
+    }
+
+    private static WebApplication ConfigurePipeline(WebApplication app)
+    {
+        // Additional configuration can be performed here
+        return WebApplication;
     }
 }
