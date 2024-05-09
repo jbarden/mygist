@@ -21,14 +21,10 @@ public static class Program
     }
 
     private static IServiceCollection ConfigureServices(IServiceCollection services)
-    {
         // Additional configuration can be performed here
-        return services;
-    }
+        => services;
 
     private static WebApplication ConfigurePipeline(WebApplication app)
-    {
         // Additional configuration can be performed here
-        return WebApplication;
-    }
+        => app;
 }

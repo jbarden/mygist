@@ -22,7 +22,12 @@ begin {
     $BaseSolutionDirectory = "$($RootDirectory)\$($SolutionNameAsPath)"
     $SourceDirectory = "$($BaseSolutionDirectory)\src"
     $SolutionFileWithPath = "$($BaseSolutionDirectory)\$($SolutionFile)"
-    $APIProjectName = "$($SolutionName).API"
+    if(!$SolutionName.Contains("Api")) {
+        $APIProjectName = "$($SolutionName).API"
+    }
+    else {
+        $APIProjectName = "$($SolutionName)"   
+    }
     $DomainProjectName = "$($SolutionName).Domain"
     $InfrastructureProjectName = "$($SolutionName).Infrastructure"
 
