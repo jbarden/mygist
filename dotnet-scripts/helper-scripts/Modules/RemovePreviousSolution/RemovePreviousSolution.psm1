@@ -1,6 +1,6 @@
 function RemovePreviousSolution {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to remove the previous solution from.')]
         [string]$BaseSolutionDirectory
     )
 
@@ -10,8 +10,9 @@ function RemovePreviousSolution {
         WriteColour -Message "Removed the previous version located at $($BaseSolutionDirectory)." -Colour "Green"
     }
     else {
-        WriteColour -Message "The previous version located at $($BaseSolutionDirectory) did not exist." -Colour "Green"
+        WriteColour -Message "The previous version located at $($BaseSolutionDirectory) did not exist, removal is therefore not relevant." -Colour "Green"
     }
+
     WriteColour -Message "Completed directory creation." -Colour "Green"
 }
 

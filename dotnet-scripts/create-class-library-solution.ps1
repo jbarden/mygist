@@ -7,7 +7,9 @@ Param (
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage='Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
-    [Parameter(HelpMessage='Specifies whether the solution shoulkd be configured as a NuGet package. The default is false.')]
+    [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
+    [bool]$ConfigureGit = $true,
+    [Parameter(HelpMessage='Specifies whether the solution should be configured as a NuGet package. The default is false.')]
     [bool]$MakeNuGetPackage = $false,
     [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet Description, this will be used to create the NuGet package details.')]
     [string]$NuGetDescription = 'Please update this description.',
@@ -39,12 +41,9 @@ process{
         Copy-Item ..\.gitignore -Destination "$($RootDirectory)\$($SolutionNameAsPath)"
         Set-Location "$($RootDirectory)\$($SolutionNameAsPath)"
         
-        git init --initial-branch=main
-        git config --global gpg.program "c:/Program Files (x86)/GnuPG/bin/gpg.exe"
-        git config --global user.signingkey AF697941C147E382
-        git config --global user.name "Jason Barden"
-        git config --global user.email "jason.barden@outlook.com"
-        git config --global commit.gpgsign true
+        if($ConfigureGit) {
+            & "$PSScriptRoot\configure-git.ps1"
+        }
 
         mkdir "$($RootDirectory)\$($SolutionNameAsPath)\src"
         mkdir "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit"
