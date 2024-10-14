@@ -1,16 +1,16 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the project folder to use for the new solution.')]
     [string]$ProjectFolder,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Architecture Test Namespace for the new solution.')]
     [string]$ArchitectureTestNamespace,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the UI Project Name for the new solution.')]
     [string]$UIProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the API Project Name for the new solution.')]
     [string]$APIProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Domain Project Name for the new solution.')]
     [string]$DomainProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Infrastructure Project Name for the new solution.')]
     [string]$InfrastructureProjectName
 )
 

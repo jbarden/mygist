@@ -259,7 +259,7 @@ if ($VSCode.IsPresent -or $All.IsPresent) {
             }
         }
         
-        if (((Get-CimInstance -ClassName Win32_OperatingSystem).Name).Contains("Windows 11")) {
+        if (((Get-CimInstance -ClassName Win32_OperatingSystem).Name).Contains("Windows 11", 'InvariantCultureIgnoreCase')) {
             $codeCmdPath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
             Write-Host "`nReset codeCmdPath to: $codeCmdPath..." -ForegroundColor Green
         }

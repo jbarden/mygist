@@ -1,7 +1,7 @@
 using AStar.ASPNet.Extensions.PipelineExtensions;
 using AStar.ASPNet.Extensions.ServiceCollectionExtensions;
 
-namespace {ApiProjectName};
+namespace {ProjectName};
 
 public static class Program
 {

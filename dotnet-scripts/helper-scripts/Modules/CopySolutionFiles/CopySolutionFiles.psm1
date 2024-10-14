@@ -1,17 +1,17 @@
 function CopySolutionFiles {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory of the new solution.')]
         [string]$BaseSolutionDirectory,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
-        [string]$APIProjectName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'The project name within the new solution.')]
+        [string]$ProjectName,
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the name of the new solution.')]
         [string]$SolutionName
     )
     
     WriteColour -Message "Copying files." -Colour "Magenta"
     
-    if(Test-Path -Path "$($BaseSolutionDirectory)\src\api\$($APIProjectName)"){
-        xcopy .\nuget.config "$($BaseSolutionDirectory)\src\api\$($APIProjectName)" /Y
+    if(Test-Path -Path "$($BaseSolutionDirectory)\src\api\$($ProjectName)"){
+        xcopy .\nuget\nuget.config "$($BaseSolutionDirectory)\src\api\$($ProjectName)" /Y
     }
 
     xcopy .\.editorconfig $BaseSolutionDirectory /Y

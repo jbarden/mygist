@@ -1,9 +1,9 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory for the new solution.')]
     [string]$ProjectFolder,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
-    [string]$ApiProjectName
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the project name for the new solution.')]
+    [string]$ProjectName
 )
 
 begin {
@@ -19,7 +19,7 @@ process{
     WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
     $fileContent = Get-Content -Path $filePath
     
-    $fileContent = $fileContent.Replace("{ApiProjectName}", "$($ApiProjectName)")
+    $fileContent = $fileContent.Replace("{ProjectName}", "$($ProjectName)")
     $fileContent | Set-Content -Path $filePath
     
     WriteColour -Message "Updated the $($filePath) file." -Colour "Green"

@@ -6,14 +6,32 @@ Param (
     [Parameter(Mandatory = $true, HelpMessage='Specify the root directory to use to create the new solution.')]
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage='Specify the solution name, this will be used to create the solution file and all associated projects.')]
-    [string]$SolutionName
+    [string]$SolutionName,
+    [Parameter(HelpMessage='Specifies whether the solution shoulkd be configured as a NuGet package. The default is false.')]
+    [bool]$MakeNuGetPackage = $false,
+    [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet Description, this will be used to create the NuGet package details.')]
+    [string]$NuGetDescription = 'Please update this description.',
+    [Parameter(Mandatory = $false, HelpMessage='Specify the Release Notes, this will be used to create the NuGet package details.')]
+    [string]$ReleaseNotes = 'Version 0.1.0 is the initial version. There are no changes.',
+    [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet version, this will be used to create the NuGet package details.')]
+    [string]$NuGetVersion = '0.1.0'
 )
 
 begin{
     $startTime = Get-Date
     $StartingFolder = Get-Location
     $SolutionFile = "$($SolutionName).sln"
-    $SolutionNameAsPath = $SolutionName.Replace(".", "-").ToLower()}
+    $SolutionNameAsPath = $SolutionName.Replace(".", "-").ToLower()
+    $GitHubProject = $SolutionNameAsPath
+
+    function WriteColour($colour) {
+        process { Write-Host $_ -ForegroundColor $colour }
+    }
+
+    function ReadFilePreservingLineBreaks($path) {
+        (Get-Content -Path $path -Raw) + [Environment]::NewLine + [Environment]::NewLine
+    }
+}
 
 process{
     try {
@@ -48,6 +66,16 @@ process{
                 $fullName = $file.FullName
                 Invoke-Expression "dotnet add $fullName package $package"
             }
+        }
+
+        if($MakeNuGetPackage) {
+            & "$PSScriptRoot\nuget-project-file-updates.ps1" -RootDirectory "$($RootDirectory)" -SolutionNameAsPath "$($SolutionNameAsPath)" `
+                    -SolutionName "$($SolutionName)" -GitHubProject "$($GitHubProject)" -NuGetVersion "$($NuGetVersion)" -NuGetDescription "$($NuGetDescription)" `
+                    -ReleaseNotes "$($ReleaseNotes)"
+                 
+            & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory "$($RootDirectory)\$($SolutionNameAsPath)" -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
+
+            Write-Output "Updated the $($SolutionName) project file to become a NuGet package." | WriteColour("Green")
         }
     }
     finally {
