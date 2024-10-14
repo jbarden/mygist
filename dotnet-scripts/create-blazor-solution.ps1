@@ -6,6 +6,8 @@ Param (
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
+    [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
+    [bool]$ConfigureGit = $true,
     [Parameter(HelpMessage='Controls whether to run the update and NuGet restore. The default is $true to update all NuGet packages but this does add roughly 2 minutes.')]
     [bool]$UpdateNuget = $true,
     [Parameter(HelpMessage='Controls whether to redploy (i.e. remove all existing files) the template. The default is, for safety, $false.')]
@@ -46,6 +48,10 @@ process {
 
         CreateDirectories -BaseSolutionDirectory $BaseSolutionDirectory -CreateUiDirectories $true
         CopySolutionFiles -BaseSolutionDirectory $BaseSolutionDirectory
+        
+        if($ConfigureGit) {
+            & "$PSScriptRoot\configure-git.ps1"
+        }
         
         WriteColour -Message "Creating the solution file." -Colour "Magenta"
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"
