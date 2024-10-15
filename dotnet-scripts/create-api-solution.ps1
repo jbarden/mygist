@@ -42,6 +42,7 @@ begin {
     Import-Module UpdateNuget -Force
     Import-Module WarningsAsErrors -Force
     Import-Module -Name EndOutput -Force
+    Import-Module -Name GitHubPipelines -Force
 }
 
 process {
@@ -121,6 +122,9 @@ process {
         WriteColour -Message "Running code cleanup - started at $(Get-Date)." -Colour "Magenta"
         & 'dotnet' 'format' $SolutionFileWithPath
         WriteColour -Message "Completed code cleanup - finished at $(Get-Date)." -Colour "Magenta"
+
+        xcopy $StartingFolder\..\nuget-pipelines\api\.github $BaseSolutionDirectory\.github\ /Y /S
+        GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
     }
     finally {
         Set-Location "$($StartingFolder)"

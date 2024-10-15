@@ -39,6 +39,7 @@ begin {
     Import-Module CreateApi
     Import-Module WarningsAsErrors -Force
     Import-Module -Name EndOutput -Force
+    Import-Module -Name GitHubPipelines -Force
 }
 
 process {
@@ -163,6 +164,9 @@ process {
         & 'dotnet' 'format' $SolutionFileWithPath
         WriteColour -Message "Completed code cleanup - finished at $(Get-Date)." -Colour "Magenta"
         remove-item '$($BaseSolutionDirectory)\Class1.cs' -recurse -force
+
+        xcopy $StartingFolder\..\nuget-pipelines\ui\.github $BaseSolutionDirectory\.github\ /Y /S
+        GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
     }
     finally {
         Set-Location "$($StartingFolder)"

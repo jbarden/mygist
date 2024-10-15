@@ -18,7 +18,9 @@ Param (
     [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet version, this will be used to create the NuGet package details.')]
     [string]$NuGetVersion = '0.1.0',
     [Parameter(HelpMessage='Controls whether to redploy (i.e. remove all existing files) the template. The default is, for safety, $false.')]
-    [bool]$Redeploy = $false
+    [bool]$Redeploy = $false,
+    [Parameter(HelpMessage='Controls whether to launch the new solution. The default is, for the sake of speed, $false.')]
+    [bool]$LaunchOnCompletion = $false
 )
 
 begin{
@@ -32,6 +34,7 @@ begin{
     Import-Module -Name CreateInitialSolution -Force
     Import-Module -Name WarningsAsErrors -Force
     Import-Module -Name EndOutput -Force
+    Import-Module -Name GitHubPipelines -Force
 
     function ReadFilePreservingLineBreaks($path) {
         (Get-Content -Path $path -Raw) + [Environment]::NewLine + [Environment]::NewLine
@@ -79,7 +82,12 @@ process{
             & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
 
             WriteColour -Message "Updated the $($SolutionName) project file to become a NuGet package." -Colour 'Green'
+            xcopy $StartingFolder\..\nuget-pipelines\nuget-package\.github $BaseSolutionDirectory\.github\ /Y /S
+        } else {
+            xcopy $StartingFolder\..\nuget-pipelines\class-library\.github $BaseSolutionDirectory\.github\ /Y /S
         }
+
+        GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
     }
     finally {
         Set-Location "$($StartingFolder)"
@@ -88,4 +96,7 @@ process{
 
 end{
     EndOutput -startTime "$($startTime)"
+    if($LaunchOnCompletion) {
+        & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe' $SolutionFileWithPath
+    }
 }
