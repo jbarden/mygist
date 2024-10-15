@@ -16,19 +16,20 @@ Param (
     [Parameter(Mandatory = $false, HelpMessage='Specify the Release Notes, this will be used to create the NuGet package details.')]
     [string]$ReleaseNotes = 'Version 0.1.0 is the initial version. There are no changes.',
     [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet version, this will be used to create the NuGet package details.')]
-    [string]$NuGetVersion = '0.1.0'
+    [string]$NuGetVersion = '0.1.0',
+    [Parameter(HelpMessage='Controls whether to redploy (i.e. remove all existing files) the template. The default is, for safety, $false.')]
+    [bool]$Redeploy = $false
 )
 
 begin{
     $startTime = Get-Date
     $StartingFolder = Get-Location
-    $SolutionFile = "$($SolutionName).sln"
     $SolutionNameAsPath = $SolutionName.Replace(".", "-").ToLower()
+    $BaseSolutionDirectory = "$($RootDirectory)\$($SolutionNameAsPath)"
     $GitHubProject = $SolutionNameAsPath
-
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
+    Import-Module -Name RemovePreviousSolution -Force
+    Import-Module -Name WriteColour -Force
+    Import-Module -Name CreateInitialSolution -Force
 
     function ReadFilePreservingLineBreaks($path) {
         (Get-Content -Path $path -Raw) + [Environment]::NewLine + [Environment]::NewLine
@@ -37,25 +38,18 @@ begin{
 
 process{
     try {
-        mkdir "$($RootDirectory)\$($SolutionNameAsPath)"
-        Copy-Item ..\.gitignore -Destination "$($RootDirectory)\$($SolutionNameAsPath)"
-        Set-Location "$($RootDirectory)\$($SolutionNameAsPath)"
-        
-        if($ConfigureGit) {
-            & "$PSScriptRoot\configure-git.ps1"
+        WriteColour -Message "Starting the Class Library creation" -Colour "Green"
+        if($Redeploy) {
+            RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
 
-        mkdir "$($RootDirectory)\$($SolutionNameAsPath)\src"
-        mkdir "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit"
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -ConfigureGit $ConfigureGit -CreateClassLibrary $true
         
-        dotnet new sln --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)"
+        Set-Location $BaseSolutionDirectory
+        
         dotnet new classlib --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
-        dotnet sln "$($RootDirectory)\$($SolutionNameAsPath)\$SolutionFile" add "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
-        
-        dotnet new xunit --name "$($SolutionName).Unit.Tests" --output "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit\$($SolutionName).Unit.Tests"
-        dotnet add "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit\$($SolutionName).Unit.Tests\$($SolutionName).Unit.Tests.csproj" reference "$($RootDirectory)\$($SolutionNameAsPath)\src\$($SolutionName)"
-        dotnet sln "$($RootDirectory)\$($SolutionNameAsPath)\$SolutionFile" add "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit\$($SolutionName).Unit.Tests"
-        
+        dotnet sln "$($BaseSolutionDirectory)\$SolutionFile" add "$($BaseSolutionDirectory)\src\$SolutionName"
+    
         $regex = 'PackageReference Include="([^"]*)" Version="([^"]*)"'
         
         ForEach ($file in get-childitem . -recurse | Where-Object {$_.extension -like "*proj"})
@@ -68,7 +62,7 @@ process{
             
             ForEach ($package in $packages)
             {
-                write-host "Update $file package :$package"  -foreground 'Magenta'
+                WriteColour -Message "Update $file package :$package" -Colour 'Magenta'
                 $fullName = $file.FullName
                 Invoke-Expression "dotnet add $fullName package $package"
             }
@@ -79,9 +73,9 @@ process{
                     -SolutionName "$($SolutionName)" -GitHubProject "$($GitHubProject)" -NuGetVersion "$($NuGetVersion)" -NuGetDescription "$($NuGetDescription)" `
                     -ReleaseNotes "$($ReleaseNotes)"
                  
-            & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory "$($RootDirectory)\$($SolutionNameAsPath)" -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
+            & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
 
-            Write-Output "Updated the $($SolutionName) project file to become a NuGet package." | WriteColour("Green")
+            WriteColour -Message "Updated the $($SolutionName) project file to become a NuGet package." -Colour 'Green'
         }
     }
     finally {

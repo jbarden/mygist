@@ -12,8 +12,6 @@ function RemovePreviousSolution {
     else {
         WriteColour -Message "The previous version located at $($BaseSolutionDirectory) did not exist, removal is therefore not relevant." -Colour "Green"
     }
-
-    WriteColour -Message "Completed directory creation." -Colour "Green"
 }
 
 Export-ModuleMember -Function RemovePreviousSolution

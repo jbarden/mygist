@@ -33,8 +33,7 @@ begin {
     $userHome = $env:USERPROFILE
     xcopy .\helper-scripts\Modules\ $userHome\OneDrive\Documents\PowerShell\Modules\ /Y /S
     Import-Module WriteColour
-    Import-Module CreateDirectories
-    Import-Module CopySolutionFiles
+    Import-Module CreateInitialSolution
     Import-Module RemovePreviousSolution
     Import-Module CreateBlazorUi
     Import-Module CreateApi
@@ -45,14 +44,9 @@ process {
         if($Redeploy) {
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
+        
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $true -ConfigureGit $ConfigureGit -CreateClassLibrary $false
 
-        CreateDirectories -BaseSolutionDirectory $BaseSolutionDirectory -CreateUiDirectories $true
-        CopySolutionFiles -BaseSolutionDirectory $BaseSolutionDirectory
-        
-        if($ConfigureGit) {
-            & "$PSScriptRoot\configure-git.ps1"
-        }
-        
         WriteColour -Message "Creating the solution file." -Colour "Magenta"
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"
 

@@ -1,8 +1,8 @@
 function WriteColour {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the message to display.')]
         [string]$Message,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the colour to display the message in.')]
         [string]$Colour
     )
     Write-Host $Message -ForegroundColor $Colour    
