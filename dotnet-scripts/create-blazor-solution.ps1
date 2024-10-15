@@ -37,6 +37,8 @@ begin {
     Import-Module RemovePreviousSolution
     Import-Module CreateBlazorUi
     Import-Module CreateApi
+    Import-Module WarningsAsErrors -Force
+    Import-Module -Name EndOutput -Force
 }
 
 process {
@@ -155,7 +157,7 @@ process {
         
         & "$PSScriptRoot\update-ui-project.ps1" -ProjectFolder "$($UIDirectory)"
         & "$PSScriptRoot\update-api-project.ps1" -ProjectFolder $("$($SourceDirectory)\api\$($ProjectName)")
-        & "$PSScriptRoot\set-projects-to-treat-warnings-as-errors.ps1" -RootDirectory $($RootDirectory) -SolutionName $($SolutionName)
+        WarningsAsErrors -BaseSolutionDirectory $BaseSolutionDirectory -StartingFolder $StartingFolder
 
         WriteColour -Message "Running code cleanup - started at $(Get-Date)." -Colour "Magenta"
         & 'dotnet' 'format' $SolutionFileWithPath
@@ -168,11 +170,7 @@ process {
 }
 
 end {
-    $endTime = Get-Date
-    $duration = New-TimeSpan -Start $startTime -End $endTime
-    WriteColour -Message "Start time: $($startTime)." -Colour "DarkYellow"
-    WriteColour -Message "End time: $($endTime)." -Colour "DarkYellow"
-    WriteColour -Message "Total processing time: $($duration.TotalMinutes) minutes." -Colour "Green"
+    EndOutput -startTime "$($startTime)"
     if($LaunchOnCompletion) {
         & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe' $SolutionFileWithPath
     }

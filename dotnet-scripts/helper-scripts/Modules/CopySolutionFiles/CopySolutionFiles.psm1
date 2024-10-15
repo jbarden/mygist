@@ -8,6 +8,7 @@ function CopySolutionFiles {
         [string]$SolutionName
     )
     
+    Import-Module -Name WriteColour -Force
     WriteColour -Message "Copying files." -Colour "Magenta"
     
     if(Test-Path -Path "$($BaseSolutionDirectory)\src\api\$($ProjectName)"){
@@ -21,7 +22,7 @@ function CopySolutionFiles {
 
     $filePath = "$($BaseSolutionDirectory)\readme.md"
         
-    $fileContent = Get-Content -Path $filePath
+    $fileContent = Get-Content -Path $filePath -Raw
 
     $updatedSolutionName = $SolutionName.Replace(".", "-")
     $fileContent = $fileContent.Replace("{SolutionName}", "$($updatedSolutionName)")

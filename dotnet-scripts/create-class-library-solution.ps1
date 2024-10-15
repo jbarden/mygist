@@ -30,6 +30,8 @@ begin{
     Import-Module -Name RemovePreviousSolution -Force
     Import-Module -Name WriteColour -Force
     Import-Module -Name CreateInitialSolution -Force
+    Import-Module -Name WarningsAsErrors -Force
+    Import-Module -Name EndOutput -Force
 
     function ReadFilePreservingLineBreaks($path) {
         (Get-Content -Path $path -Raw) + [Environment]::NewLine + [Environment]::NewLine
@@ -46,7 +48,6 @@ process{
         CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -ConfigureGit $ConfigureGit -CreateClassLibrary $true
         
         Set-Location $BaseSolutionDirectory
-        
         dotnet new classlib --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
         dotnet sln "$($BaseSolutionDirectory)\$SolutionFile" add "$($BaseSolutionDirectory)\src\$SolutionName"
     
@@ -62,11 +63,13 @@ process{
             
             ForEach ($package in $packages)
             {
-                WriteColour -Message "Update $file package :$package" -Colour 'Magenta'
+                WriteColour -Message "Updating $file package :$package" -Colour 'Magenta'
                 $fullName = $file.FullName
                 Invoke-Expression "dotnet add $fullName package $package"
             }
         }
+
+        WarningsAsErrors -BaseSolutionDirectory $BaseSolutionDirectory -StartingFolder $StartingFolder
 
         if($MakeNuGetPackage) {
             & "$PSScriptRoot\nuget-project-file-updates.ps1" -RootDirectory "$($RootDirectory)" -SolutionNameAsPath "$($SolutionNameAsPath)" `
@@ -84,9 +87,5 @@ process{
 }
 
 end{
-    $endTime = Get-Date
-    $duration = New-TimeSpan -Start $startTime -End $endTime
-    WriteColour -Message "Start time: $($startTime)." -Colour "DarkYellow"
-    WriteColour -Message "End time: $($endTime)." -Colour "DarkYellow"
-    WriteColour -Message "Total processing time: $($duration.TotalMinutes) minutes." -Colour "Green"    
+    EndOutput -startTime "$($startTime)"
 }

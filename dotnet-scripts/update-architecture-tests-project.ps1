@@ -23,7 +23,7 @@ process{
 
     $filePath = "$($ProjectFolder)\ArchitectureLayersShould.cs"
     WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
-    $fileContent = Get-Content -Path $filePath
+    $fileContent = Get-Content -Path $filePath -Raw
     
     $fileContent = $fileContent.Replace("{ArchitectureNamespace}", "$($ArchitectureTestNamespace)")
     $fileContent = $fileContent.Replace("{UiName}", "$($UIProjectName)")

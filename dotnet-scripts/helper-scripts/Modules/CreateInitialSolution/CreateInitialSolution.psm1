@@ -16,6 +16,7 @@ function CreateInitialSolution {
 
     Import-Module CopySolutionFiles
     Import-Module ConfigureGit -Force
+    Import-Module -Name WriteColour -Force
 
     WriteColour -Message "Starting directory creation at $($BaseSolutionDirectory)." -Colour "Magenta"
     mkdir "$($BaseSolutionDirectory)\src"
@@ -47,6 +48,7 @@ function CreateInitialSolution {
     CopySolutionFiles -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName
 
     if($ConfigureGit) {
+        Set-Location $BaseSolutionDirectory
         ConfigureGit
     }
 }

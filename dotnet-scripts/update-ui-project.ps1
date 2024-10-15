@@ -21,7 +21,7 @@ process{
     $textToReplace = '<html lang="en">'
     $newText = '<html lang="en" data-bs-theme="dark">'
     
-    $fileContent = Get-Content -Path $filePath
+    $fileContent = Get-Content -Path $filePath -Raw
     $fileContent = $fileContent -replace $textToReplace, $newText
     
     $textToReplace = '<base href="/" />'
@@ -62,7 +62,7 @@ process{
 
     $filePath = "$($ProjectFolder)\ui\components\_Imports.razor"
     WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
-    @("@using BlazorBootstrap;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    @("@using BlazorBootstrap;") + (Get-Content $($filePath) -Raw) | Set-Content $($filePath)
     WriteColour -Message "Updated the $($filePath) file." -Colour "Green"
 
     $filePath = "$($ProjectFolder)\program.cs"    
@@ -72,14 +72,14 @@ process{
 builder.Services.AddGlobalExceptionHandler();
 var app = builder.Build();"
     
-    $fileContent = Get-Content -Path $filePath
+    $fileContent = Get-Content -Path $filePath -Raw
     $fileContent = $fileContent.Replace($textToReplace, $newText)
     $fileContent = $fileContent.Replace("// Add services to the container.", "")
     $fileContent = $fileContent.Replace("// Configure the HTTP request pipeline.", "")
     $fileContent = $fileContent.Replace("// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.", "")
     
     $fileContent | Set-Content -Path $filePath
-    @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath)) | Set-Content $($filePath)
+    @("using AStar.ASPNet.Extensions.Handlers;") + (Get-Content $($filePath) -Raw) | Set-Content $($filePath)
     WriteColour -Message "Updated the $($filePath) file." -Colour "Green"
 
     WriteColour -Message "Copying Layout and NavMenu files to $($ProjectFolder)\ui\components\Layout\." -Colour "Magenta"

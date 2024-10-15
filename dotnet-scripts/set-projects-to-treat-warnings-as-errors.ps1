@@ -17,12 +17,12 @@ begin {
 
 process {
     $projectFiles = Get-ChildItem -Path $BaseSolutionDirectory -Filter *.csproj -Recurse
-    $newText = Get-Content -Path "warnings-as-errors.txt"
+    $newText = Get-Content -Path "warnings-as-errors.txt" -Raw
     $newText
 
     foreach ($filePath in $projectFiles) {
         Write-Output "Updating the $($filePath) file to treat warnings as errors." | WriteColour("Magenta")
-        $fileContent = Get-Content -Path $filePath
+        $fileContent = Get-Content -Path $filePath -Raw
         $textToReplace = "</Project>"
         
         $fileContent = $fileContent.Replace($textToReplace, $newText)

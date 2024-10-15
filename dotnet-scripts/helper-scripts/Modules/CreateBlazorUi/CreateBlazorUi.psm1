@@ -8,6 +8,7 @@ function CreateBlazorUi {
         [string]$SolutionFileWithPath
     )
     
+    Import-Module -Name WriteColour -Force
     $UIProjectName = "$($SolutionName).UI"
     $UIDirectory = "$($BaseSolutionDirectory)\src\ui\$($UIProjectName)"    
     

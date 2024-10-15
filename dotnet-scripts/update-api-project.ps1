@@ -17,7 +17,7 @@ process{
     xcopy .\api-files\Program.cs "$($ProjectFolder)\" /Y /S
     $filePath = "$($ProjectFolder)\Program.cs"
     WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
-    $fileContent = Get-Content -Path $filePath
+    $fileContent = Get-Content -Path $filePath -Raw
     
     $fileContent = $fileContent.Replace("{ProjectName}", "$($ProjectName)")
     $fileContent | Set-Content -Path $filePath

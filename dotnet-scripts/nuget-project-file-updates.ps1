@@ -22,7 +22,7 @@ begin {
 
 process { 
     $coreProjectLocation = "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName\$SolutionName.csproj"
-    $fileContent = Get-Content -Path $coreProjectLocation
+    $fileContent = Get-Content -Path $coreProjectLocation -Raw
     $textToReplace = "</Project>"
 
     $newText = ReadFilePreservingLineBreaks("$StartingFolder\nuget\NuGet.PropertyGroup.txt")

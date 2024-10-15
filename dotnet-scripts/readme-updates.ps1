@@ -16,7 +16,7 @@ begin {
 
 process{ 
     $readmeLocation = "$($SolutionDirectory)\readme.md"
-    $fileContent = Get-Content -Path $readmeLocation
+    $fileContent = Get-Content -Path $readmeLocation -Raw
     $fileContent = $fileContent.Replace('{SolutionName}', $SolutionName)
     $fileContent = $fileContent.Replace('{SolutionNameAsPath}', $SolutionNameAsPath)
     $fileContent | Set-Content -Path $readmeLocation

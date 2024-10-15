@@ -8,6 +8,7 @@ function CreateApi {
         [string]$SolutionFileWithPath
     )
 
+    Import-Module -Name WriteColour -Force
     $APIDirectory = "$($BaseSolutionDirectory)\src\api\$($ProjectName)"
 
     WriteColour -Message "Creating the API project." -Colour "Magenta"
