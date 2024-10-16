@@ -9,7 +9,11 @@ Param (
     [Parameter(HelpMessage='Controls whether to run the update and NuGet restore. The default is $true to update all NuGet packages but this does add roughly 2 minutes.')]
     [bool]$UpdateNuget = $true,
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
-    [bool]$ConfigureGit = $true,
+    [bool]$CreateAndConfigureGitHubRepo = $true,
+    [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+    [string]$BearerToken,
+    [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+    [string]$Owner = "astar-development",
     [Parameter(HelpMessage='Controls whether to redploy (i.e. remove all existing files) the template. The default is, for safety, $false.')]
     [bool]$Redeploy = $false,
     [Parameter(HelpMessage='Controls whether to launch the new solution. The default is, for the sake of speed, $false.')]
@@ -51,7 +55,7 @@ process {
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
 
-        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $false -ConfigureGit $ConfigureGit -CreateClassLibrary $false
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $false -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder
 
         WriteColour -Message "Creating the solution file." -Colour "Magenta"
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"

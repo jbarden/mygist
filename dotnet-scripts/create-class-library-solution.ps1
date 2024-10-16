@@ -7,8 +7,12 @@ Param (
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage='Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
+    [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+    [string]$BearerToken,
+    [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+    [string]$Owner = "astar-development",
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
-    [bool]$ConfigureGit = $true,
+    [bool]$CreateAndConfigureGitHubRepo = $true,
     [Parameter(HelpMessage='Specifies whether the solution should be configured as a NuGet package. The default is false.')]
     [bool]$MakeNuGetPackage = $false,
     [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet Description, this will be used to create the NuGet package details.')]
@@ -28,7 +32,6 @@ begin{
     $StartingFolder = Get-Location
     $SolutionNameAsPath = $SolutionName.Replace(".", "-").ToLower()
     $BaseSolutionDirectory = "$($RootDirectory)\$($SolutionNameAsPath)"
-    $GitHubProject = $SolutionNameAsPath
     Import-Module -Name RemovePreviousSolution -Force
     Import-Module -Name WriteColour -Force
     Import-Module -Name CreateInitialSolution -Force
@@ -48,7 +51,7 @@ process{
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
 
-        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -ConfigureGit $ConfigureGit -CreateClassLibrary $true
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $true -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder
         
         Set-Location $BaseSolutionDirectory
         dotnet new classlib --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
@@ -76,7 +79,7 @@ process{
 
         if($MakeNuGetPackage) {
             & "$PSScriptRoot\nuget-project-file-updates.ps1" -RootDirectory "$($RootDirectory)" -SolutionNameAsPath "$($SolutionNameAsPath)" `
-                    -SolutionName "$($SolutionName)" -GitHubProject "$($GitHubProject)" -NuGetVersion "$($NuGetVersion)" -NuGetDescription "$($NuGetDescription)" `
+                    -SolutionName "$($SolutionName)" -GitHubProject "$($SolutionNameAsPath)" -NuGetVersion "$($NuGetVersion)" -NuGetDescription "$($NuGetDescription)" `
                     -ReleaseNotes "$($ReleaseNotes)"
                  
             & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
@@ -87,7 +90,14 @@ process{
             xcopy $StartingFolder\..\nuget-pipelines\class-library\.github $BaseSolutionDirectory\.github\ /Y /S
         }
 
+        $gitBranch = "initial-creation"
         GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
+        git add .
+        git commit -m "Initial commit"
+        git push --set-upstream origin $gitBranch
+
+        $prBody = '{"title":"Initial solution creation","body":"Initial solution creation","head":"'+$Owner+':'+$gitBranch+'","base":"main"}'
+        curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BearerToken" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$Owner/$SolutionNameAsPath/pulls -d $prBody
     }
     finally {
         Set-Location "$($StartingFolder)"
@@ -97,6 +107,7 @@ process{
 end{
     EndOutput -startTime "$($startTime)"
     if($LaunchOnCompletion) {
+         WriteColour -Message "Opening the $($SolutionFileWithPath) solution." -Colour 'Green'
         & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe' $SolutionFileWithPath
     }
 }
