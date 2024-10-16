@@ -44,6 +44,7 @@ begin {
     Import-Module WarningsAsErrors -Force
     Import-Module -Name EndOutput -Force
     Import-Module -Name GitHubPipelines -Force
+    Import-Module -Name CommitInitialSolution -Force
 }
 
 process {
@@ -171,6 +172,9 @@ process {
 
         xcopy $StartingFolder\..\nuget-pipelines\ui\.github $BaseSolutionDirectory\.github\ /Y /S
         GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
+
+        
+        CommitInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -BearerToken $BearerToken -SolutionName $SolutionName -Owner $Owner
     }
     finally {
         Set-Location "$($StartingFolder)"

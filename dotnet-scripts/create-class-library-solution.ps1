@@ -38,6 +38,7 @@ begin{
     Import-Module -Name WarningsAsErrors -Force
     Import-Module -Name EndOutput -Force
     Import-Module -Name GitHubPipelines -Force
+    Import-Module -Name CommitInitialSolution -Force
 
     function ReadFilePreservingLineBreaks($path) {
         (Get-Content -Path $path -Raw) + [Environment]::NewLine + [Environment]::NewLine
@@ -90,17 +91,7 @@ process{
             xcopy $StartingFolder\..\nuget-pipelines\class-library\.github $BaseSolutionDirectory\.github\ /Y /S
         }
 
-        $gitBranch = "initial-creation"
-        GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName
-        git add .
-        git commit -m "Initial commit"
-        git push --set-upstream origin $gitBranch
-
-        $prBody = '{"title":"Initial solution creation","body":"Initial solution creation","head":"'+$Owner+':'+$gitBranch+'","base":"main"}'
-        $response = (curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BearerToken" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$Owner/$SolutionNameAsPath/pulls -d $prBody) | ConvertFrom-Json
-
-        $prUrl = "https://api.github.com/repos/$Owner/$SolutionNameAsPath/pulls/$($response.number)/requested_reviewers"
-        curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BearerToken" -H "X-GitHub-Api-Version: 2022-11-28" $prUrl -d '{"reviewers":["jaybarden1"]}'
+        CommitInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -BearerToken $BearerToken -SolutionName $SolutionName -Owner $Owner
     }
     finally {
         Set-Location "$($StartingFolder)"
