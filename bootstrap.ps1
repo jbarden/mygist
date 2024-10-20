@@ -1,4 +1,5 @@
 # Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
+# git config --global --add safe.directory F:/repos/mygist
 
 [CmdletBinding()]
 Param
@@ -38,7 +39,7 @@ Param
 
     [parameter()]
     [ValidateSet("enterprise", "professional")]
-    [string]$VisualStudioEdition = "enterprise",
+    [string]$VisualStudioEdition = "professional",
 
     [Parameter()]
     [ValidateNotNull()]
@@ -125,7 +126,7 @@ switch ($Architecture) {
 if ($RecommendedApplications.IsPresent -or $Fork.IsPresent -or $All.IsPresent) {
     $appName = "Fork" 
     $installPath = "$env:LOCALAPPDATA\fork\$appName.exe"
-    $uri = "https://cdn.fork.dev/win/Fork-1.89.1.exe"
+    $uri = "https://cdn.fork.dev/win/Fork-1.96.1.exe"
     
     InstallIfRequired -appName $appName -installPath $installPath -Uri $uri
 }
@@ -178,6 +179,44 @@ if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
     InstallIfRequired -appName $appName -installPath $installPath -Uri $uri
 }
 
+if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
+
+    $appName = "Microsoft.PowerShell"
+    if (!(Test-Path "TBC")) {
+        Write-Host "Installing $appName"
+        Install-Module -Name Terminal-Icons -Repository PSGallery
+        winget install Microsoft.PowerShell
+		winget install JanDeDobbeleer.OhMyPosh
+        Write-Host "Installed $appName" -ForegroundColor Green
+        Write-Host "Please remember to set $appName as the default profile in Terminal!!!" -ForegroundColor Green
+    }
+    else {
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+
+    $appName = "CascadiaCode"
+    if (!(Test-Path "C:\Windows\Fonts\Caskaydia Cove Nerd Font Book.ttf")) {
+        Write-Host "Downloading $appName"
+        Invoke-WebRequest -Uri https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip -OutFile .\$appName.zip
+        Write-Host "Installing $appName"
+        Expand-Archive -LiteralPath .\$appName.zip -DestinationPath .\$appName\ -Force
+        Remove-Item .\$appName.zip
+        Invoke-Item .
+        Write-Host "Please copy the fonts to c:\windows\fonts" -ForegroundColor Green
+    }
+    else {
+        Write-Host "$appName is already installed" -ForegroundColor Green
+    }
+}
+
+if ($AzureCLI.IsPresent -or $All.IsPresent) {
+    Write-Host "Installing Azure CLI"
+	Install-Module Az
+    Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi
+    Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
+    Remove-Item .\AzureCLI.msi
+}
+
 if ($Bootstrap.IsPresent -or $All.IsPresent) {
     Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
@@ -220,7 +259,7 @@ if ($VSCode.IsPresent -or $All.IsPresent) {
             }
         }
         
-        if (((Get-CimInstance -ClassName Win32_OperatingSystem).Name).Contains("Windows 11")) {
+        if (((Get-CimInstance -ClassName Win32_OperatingSystem).Name).Contains("Windows 11", 'InvariantCultureIgnoreCase')) {
             $codeCmdPath = "C:\Program Files\Microsoft VS Code\bin\code.cmd"
             Write-Host "`nReset codeCmdPath to: $codeCmdPath..." -ForegroundColor Green
         }
@@ -260,13 +299,6 @@ if ($VSCode.IsPresent -or $All.IsPresent) {
     }
 }
 
-if ($AzureCLI.IsPresent -or $All.IsPresent) {
-    Write-Host "Installing Azure CLI"
-    Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi
-    Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
-    Remove-Item .\AzureCLI.msi
-}
-
 if ($CreateDirectories.IsPresent -or $All.IsPresent) {
     Write-Host "Creating default directories..."
     $DefaultDirectories = @("c:\temp", "c:\repos", "c:\logs", "c:\local-nuget", "c:\repos\mine", "c:\repos\work")
@@ -291,36 +323,6 @@ if ($CreateDirectories.IsPresent -or $All.IsPresent) {
         }
     }
     Write-Host "CreateDirectories completed" -ForegroundColor Green
-}
-
-if ($RecommendedApplications.IsPresent -or $All.IsPresent) {
-
-    $appName = "Microsoft.PowerShell"
-    if (!(Test-Path "TBC")) {
-        Write-Host "Installing $appName"
-        Install-Module -Name Terminal-Icons -Repository PSGallery
-        winget install Microsoft.PowerShell
-		winget install JanDeDobbeleer.OhMyPosh
-        Write-Host "Installed $appName" -ForegroundColor Green
-        Write-Host "Please remember to set $appName as the default profile in Terminal!!!" -ForegroundColor Green
-    }
-    else {
-        Write-Host "$appName is already installed" -ForegroundColor Green
-    }
-
-    $appName = "CascadiaCode"
-    if (!(Test-Path "C:\Windows\Fonts\Caskaydia Cove Nerd Font Book.ttf")) {
-        Write-Host "Downloading $appName"
-        Invoke-WebRequest -Uri https://github.com/microsoft/cascadia-code/releases/download/v2111.01/CascadiaCode-2111.01.zip -OutFile .\$appName.zip
-        Write-Host "Installing $appName"
-        Expand-Archive -LiteralPath .\$appName.zip -DestinationPath .\$appName\ -Force
-        Remove-Item .\$appName.zip
-        Invoke-Item .
-        Write-Host "Please copy the fonts to c:\windows\fonts" -ForegroundColor Green
-    }
-    else {
-        Write-Host "$appName is already installed" -ForegroundColor Green
-    }
 }
 
 if ($VisualStudio.IsPresent -or $All.IsPresent) {

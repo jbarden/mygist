@@ -1,31 +1,29 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the project folder to use for the new solution.')]
     [string]$ProjectFolder,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Architecture Test Namespace for the new solution.')]
     [string]$ArchitectureTestNamespace,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the UI Project Name for the new solution.')]
     [string]$UIProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the API Project Name for the new solution.')]
     [string]$APIProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Domain Project Name for the new solution.')]
     [string]$DomainProjectName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Infrastructure Project Name for the new solution.')]
     [string]$InfrastructureProjectName
 )
 
 begin {
-    function WriteColour($colour) {
-        process { Write-Host $_ -ForegroundColor $colour }
-    }
+    
 }
 
 process{    
-    Write-Output "Updating $($ProjectFolder)." | WriteColour("Magenta")
+    WriteColour -Message "Updating $($ProjectFolder)." -Colour "Magenta"
 
     $filePath = "$($ProjectFolder)\ArchitectureLayersShould.cs"
-    Write-Output "Updating the $($filePath) file." | WriteColour("Magenta")
-    $fileContent = Get-Content -Path $filePath
+    WriteColour -Message "Updating the $($filePath) file." -Colour "Magenta"
+    $fileContent = Get-Content -Path $filePath -Raw
     
     $fileContent = $fileContent.Replace("{ArchitectureNamespace}", "$($ArchitectureTestNamespace)")
     $fileContent = $fileContent.Replace("{UiName}", "$($UIProjectName)")
@@ -35,9 +33,9 @@ process{
     
     $fileContent | Set-Content -Path $filePath
     
-    Write-Output "Updated the $($filePath) file." | WriteColour("Magenta")
+    WriteColour -Message "Updated the $($filePath) file." -Colour "Magenta"
 }
 
 end {
-    Write-Output "Completed project updates for Blazor Bootstrap." | WriteColour("Green")
+    WriteColour -Message "Completed project updates for Blazor Bootstrap." -Colour "Green"
 }
