@@ -4,6 +4,8 @@ function CreateAndConfigureGitHubRepo {
         [string]$BearerToken,
         [Parameter(Mandatory = $true, HelpMessage = 'Specify the name of the repository to create.')]
         [string]$RepositoryName,
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+        [string]$Description,
         [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
         [string]$Owner = "astar-development",
         [Parameter(Mandatory = $false, HelpMessage = 'Specify the root directory to clone the repository to (if $clone is set to true).')]
@@ -14,7 +16,7 @@ function CreateAndConfigureGitHubRepo {
     
     $authorisationHeader = "Authorization: Bearer $BearerToken"
     $RepositoryName = $RepositoryName.Replace(".", "-").ToLower()
-    $creationBody = '{"name": "' + $RepositoryName + '", "description":"This is your first repository","homepage":"https://github.com/$Owner/$RepositoryName","private":false,"has_issues":true,"has_projects":true,"has_wiki":true,'
+    $creationBody = '{"name": "' + $RepositoryName + '", "description":"' + $Description + '","homepage":"https://github.com/$Owner/$RepositoryName","private":false,"has_issues":true,"has_projects":true,"has_wiki":true,'
     $creationBody +='"gitignore_template":"VisualStudio","license_template":"mit","delete_branch_on_merge":true}'
 
     curl -L -X POST -H "Accept: application/vnd.github+json" -H $authorisationHeader -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/orgs/$Owner/repos -d $creationBody

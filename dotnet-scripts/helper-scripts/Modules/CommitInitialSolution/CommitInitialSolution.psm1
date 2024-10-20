@@ -5,7 +5,9 @@ function CommitInitialSolution {
         [Parameter(Mandatory = $true, HelpMessage = 'Specify the SolutionNameAsPath.')]
         [string]$SolutionNameAsPath,
         [Parameter(Mandatory = $true, HelpMessage = 'Specify the SolutionName.')]
-        [string]$SolutionName ,
+        [string]$SolutionName,
+        [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+        [string]$BearerToken,
         [Parameter(Mandatory = $false, HelpMessage = 'Specify the Owner.')]
         [string]$Owner
     )

@@ -6,6 +6,8 @@ Param (
     [string]$SolutionNameAsPath,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name.')]
     [string]$SolutionName,
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Owner.')]
+    [string]$Owner,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the GitHub Project Name.')]
     [string]$GitHubProject,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the NuGet Version.')]
@@ -29,6 +31,7 @@ process {
     $newText = $newText.Replace('{CopyrightYear}', (Get-Date).Year)
     $newText = $newText.Replace('{PackageTitle}', $SolutionName)
     $newText = $newText.Replace('{GitHubProject}', $GitHubProject)
+    $newText = $newText.Replace('{Owner}', $Owner)
     $newText = $newText.Replace('{NuGetVersion}', $NuGetVersion)
     $newText = $newText.Replace('{Description}', $NuGetDescription)
     $newText = $newText.Replace('{ReleaseNotes}', $ReleaseNotes)

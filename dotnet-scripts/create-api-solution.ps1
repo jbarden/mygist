@@ -6,6 +6,8 @@ Param (
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+    [string]$Description,
     [Parameter(HelpMessage='Controls whether to run the update and NuGet restore. The default is $true to update all NuGet packages but this does add roughly 2 minutes.')]
     [bool]$UpdateNuget = $true,
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
@@ -56,7 +58,7 @@ process {
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
 
-        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $false -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $false -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder -Description $Description
 
         WriteColour -Message "Creating the solution file." -Colour "Magenta"
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"
@@ -113,7 +115,7 @@ process {
         dotnet add "$($BaseSolutionDirectory)\tests\integration\$($ProjectName).Integration.Tests\$($ProjectName).Integration.Tests.csproj" reference "$($SourceDirectory)\api\$($ProjectName)"
         dotnet sln "$($SolutionFileWithPath)" add "$($BaseSolutionDirectory)\tests\integration\$($ProjectName).Integration.Tests"
         
-        remove-item '$($BaseSolutionDirectory)\Class1.cs' -recurse -force
+        remove-item * -Include Class1.cs -recurse -force
 
         if($UpdateNuget){
             Set-Location "$($BaseSolutionDirectory)"

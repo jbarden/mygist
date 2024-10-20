@@ -6,6 +6,8 @@ Param (
     [string]$RootDirectory,
     [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+    [string]$Description,
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
     [bool]$CreateAndConfigureGitHubRepo = $true,
     [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
@@ -53,7 +55,7 @@ process {
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
         
-        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $true -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $false -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $ProjectName -SolutionName $SolutionName -CreateUiDirectories $true -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $false -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder -Description $Description
 
         WriteColour -Message "Creating the solution file." -Colour "Magenta"
         dotnet new sln --name "$($SolutionName)" --output "$($BaseSolutionDirectory)"
@@ -168,7 +170,7 @@ process {
         WriteColour -Message "Running code cleanup - started at $(Get-Date)." -Colour "Magenta"
         & 'dotnet' 'format' $SolutionFileWithPath
         WriteColour -Message "Completed code cleanup - finished at $(Get-Date)." -Colour "Magenta"
-        remove-item '$($BaseSolutionDirectory)\Class1.cs' -recurse -force
+        remove-item * -Include Class1.cs -recurse -force
 
         xcopy $StartingFolder\..\nuget-pipelines\ui\.github $BaseSolutionDirectory\.github\ /Y /S
         GitHubPipelines -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -SolutionName $SolutionName

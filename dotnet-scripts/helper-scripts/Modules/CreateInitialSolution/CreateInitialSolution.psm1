@@ -6,6 +6,8 @@ function CreateInitialSolution {
         [string]$ProjectName,
         [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name to use to create the new solution.')]
         [string]$SolutionName,
+        [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+        [string]$Description,
         [Parameter(Mandatory = $true, HelpMessage = 'Specify the Starting Folder to reset the directories so the copy files still work.')]
         [string]$StartingFolder,
         [Parameter(HelpMessage = 'Specifies whether the GIT repo should be initialised. The default is true.')]
@@ -29,7 +31,7 @@ function CreateInitialSolution {
     if($CreateAndConfigureGitHubRepo) {
         WriteColour -Message "Creating and configuring the GitHub Repo and cloning to the directory: $($BaseSolutionDirectory)." -Colour "Magenta"
         Set-Location $BaseSolutionDirectory
-        CreateAndConfigureGitHubRepo -BearerToken $BearerToken -Owner $Owner -RepositoryName $ProjectName -clone $true -RootDirectory $BaseSolutionDirectory
+        CreateAndConfigureGitHubRepo -BearerToken $BearerToken -Owner $Owner -RepositoryName $ProjectName -clone $true -RootDirectory $BaseSolutionDirectory -Description $Description
         Set-Location $StartingFolder
     }
 

@@ -9,6 +9,8 @@ Param (
     [string]$SolutionName,
     [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
     [string]$BearerToken,
+    [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+    [string]$Description,
     [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
     [string]$Owner = "astar-development",
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
@@ -52,7 +54,7 @@ process{
             RemovePreviousSolution -BaseSolutionDirectory $BaseSolutionDirectory
         }
 
-        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $true -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder
+        CreateInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -ProjectName $SolutionName -SolutionName $SolutionName -CreateUiDirectories $false -CreateAndConfigureGitHubRepo $CreateAndConfigureGitHubRepo -CreateClassLibrary $true -BearerToken $BearerToken -Owner $Owner -StartingFolder $StartingFolder -Description $Description
         
         Set-Location $BaseSolutionDirectory
         dotnet new classlib --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
@@ -81,7 +83,7 @@ process{
         if($MakeNuGetPackage) {
             & "$PSScriptRoot\nuget-project-file-updates.ps1" -RootDirectory "$($RootDirectory)" -SolutionNameAsPath "$($SolutionNameAsPath)" `
                     -SolutionName "$($SolutionName)" -GitHubProject "$($SolutionNameAsPath)" -NuGetVersion "$($NuGetVersion)" -NuGetDescription "$($NuGetDescription)" `
-                    -ReleaseNotes "$($ReleaseNotes)"
+                    -ReleaseNotes "$($ReleaseNotes)" -Owner $Owner
                  
             & "$PSScriptRoot\readme-updates.ps1" -SolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath "$($SolutionNameAsPath)" -SolutionName "$($SolutionName)"
 
@@ -91,6 +93,8 @@ process{
             xcopy $StartingFolder\..\nuget-pipelines\class-library\.github $BaseSolutionDirectory\.github\ /Y /S
         }
 
+        
+        remove-item * -Include Class1.cs -recurse -force
         CommitInitialSolution -BaseSolutionDirectory $BaseSolutionDirectory -SolutionNameAsPath $SolutionNameAsPath -BearerToken $BearerToken -SolutionName $SolutionName -Owner $Owner
     }
     finally {
