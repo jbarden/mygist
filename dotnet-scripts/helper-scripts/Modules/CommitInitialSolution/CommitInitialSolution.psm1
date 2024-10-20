@@ -1,14 +1,14 @@
 function CommitInitialSolution {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the BaseSolutionDirectory.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the BaseSolutionDirectory.')]
         [string]$BaseSolutionDirectory,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the SolutionNameAsPath.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the SolutionNameAsPath.')]
         [string]$SolutionNameAsPath,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the SolutionName.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the SolutionName.')]
         [string]$SolutionName,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify the bearer token to access GitHub with.')]
         [string]$BearerToken,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify the Owner.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify the Owner.')]
         [string]$Owner
     )
 

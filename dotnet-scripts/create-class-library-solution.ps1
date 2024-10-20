@@ -3,25 +3,25 @@
 
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage='Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage='Please specify the root directory to use to create the new solution.')]
     [string]$RootDirectory,
-    [Parameter(Mandatory = $true, HelpMessage='Specify the solution name, this will be used to create the solution file and all associated projects.')]
+    [Parameter(Mandatory = $true, HelpMessage='Please specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
-    [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Please specify the bearer token to access GitHub with.')]
     [string]$BearerToken,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the description for the repository.')]
     [string]$Description,
-    [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Please specify the owner / organisation for the repository.')]
     [string]$Owner = "astar-development",
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
     [bool]$CreateAndConfigureGitHubRepo = $true,
     [Parameter(HelpMessage='Specifies whether the solution should be configured as a NuGet package. The default is false.')]
     [bool]$MakeNuGetPackage = $false,
-    [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet Description, this will be used to create the NuGet package details.')]
+    [Parameter(Mandatory = $false, HelpMessage='Please specify the NuGet Description, this will be used to create the NuGet package details.')]
     [string]$NuGetDescription = 'Please update this description.',
-    [Parameter(Mandatory = $false, HelpMessage='Specify the Release Notes, this will be used to create the NuGet package details.')]
+    [Parameter(Mandatory = $false, HelpMessage='Please specify the Release Notes, this will be used to create the NuGet package details.')]
     [string]$ReleaseNotes = 'Version 0.1.0 is the initial version. There are no changes.',
-    [Parameter(Mandatory = $false, HelpMessage='Specify the NuGet version, this will be used to create the NuGet package details.')]
+    [Parameter(Mandatory = $false, HelpMessage='Please specify the NuGet version, this will be used to create the NuGet package details.')]
     [string]$NuGetVersion = '0.1.0',
     [Parameter(HelpMessage='Controls whether to redploy (i.e. remove all existing files) the template. The default is, for safety, $false.')]
     [bool]$Redeploy = $false,
@@ -59,7 +59,9 @@ process{
         Set-Location $BaseSolutionDirectory
         dotnet new classlib --name "$($SolutionName)" --output "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName"
         dotnet sln "$($BaseSolutionDirectory)\$SolutionFile" add "$($BaseSolutionDirectory)\src\$SolutionName"
-    
+        dotnet add "$($RootDirectory)\$($SolutionNameAsPath)\tests\unit\$SolutionName.Unit.Tests\$SolutionName.Unit.Tests.csproj" reference "$($RootDirectory)\$($SolutionNameAsPath)\src\$SolutionName\$SolutionName.csproj"
+        WriteColour -Message "Add Class Library reference to the Unit Test project." -Colour "Magenta"
+
         $regex = 'PackageReference Include="([^"]*)" Version="([^"]*)"'
         
         ForEach ($file in get-childitem . -recurse | Where-Object {$_.extension -like "*proj"})

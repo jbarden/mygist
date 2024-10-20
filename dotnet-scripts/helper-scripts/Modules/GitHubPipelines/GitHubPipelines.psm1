@@ -1,10 +1,10 @@
 function GitHubPipelines {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use when creating the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to use when creating the new solution.')]
         [string]$BaseSolutionDirectory,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name as Path.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name as Path.')]
         [string]$SolutionNameAsPath,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name.')]
         [string]$SolutionName
     )
 

@@ -1,10 +1,10 @@
 function CopySolutionFiles {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory of the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory of the new solution.')]
         [string]$BaseSolutionDirectory,
         [Parameter(Mandatory = $true, HelpMessage = 'The project name within the new solution.')]
         [string]$ProjectName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the name of the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the name of the new solution.')]
         [string]$SolutionName
     )
     

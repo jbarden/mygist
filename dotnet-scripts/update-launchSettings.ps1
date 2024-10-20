@@ -1,6 +1,6 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to the launchSettings.json.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to the launchSettings.json.')]
     [string]$ProjectFolder
 )
 

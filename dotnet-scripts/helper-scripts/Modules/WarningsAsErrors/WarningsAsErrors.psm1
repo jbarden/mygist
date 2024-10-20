@@ -1,8 +1,8 @@
 function WarningsAsErrors {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to use to create the new solution.')]
         [string]$BaseSolutionDirectory,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Starting Folder that contains the required file(s).')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Starting Folder that contains the required file(s).')]
         [string]$StartingFolder
     )
 

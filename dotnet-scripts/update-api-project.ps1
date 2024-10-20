@@ -1,8 +1,8 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory for the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory for the new solution.')]
     [string]$ProjectFolder,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the project name for the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the project name for the new solution.')]
     [string]$ProjectName
 )
 

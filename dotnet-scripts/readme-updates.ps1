@@ -1,10 +1,10 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Directory.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Directory.')]
     [string]$SolutionDirectory,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name as path.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name as path.')]
     [string]$SolutionNameAsPath,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name.')]
     [string]$SolutionName
 )
 

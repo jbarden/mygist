@@ -1,21 +1,23 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Root Directory.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Root Directory.')]
     [string]$RootDirectory,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name as path.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name as path.')]
     [string]$SolutionNameAsPath,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Name.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Name.')]
     [string]$SolutionName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution Owner.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution Owner.')]
     [string]$Owner,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the GitHub Project Name.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the GitHub Project Name.')]
     [string]$GitHubProject,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the NuGet Version.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the NuGet Version.')]
     [string]$NuGetVersion,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the NuGet Description.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the NuGet Description.')]
     [string]$NuGetDescription,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the Release Notes.')]
-    [string]$ReleaseNotes
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Release Notes.')]
+    [string]$ReleaseNotes,
+    [Parameter(Mandatory = $false, HelpMessage = 'Please specify whether the solution being created is a Class Library or not. The default is false.')]
+    [bool]$CreateClassLibrary = $false
 )
 
 begin {
@@ -35,6 +37,9 @@ process {
     $newText = $newText.Replace('{NuGetVersion}', $NuGetVersion)
     $newText = $newText.Replace('{Description}', $NuGetDescription)
     $newText = $newText.Replace('{ReleaseNotes}', $ReleaseNotes)
+    if($CreateClassLibrary) {
+        $newText += '<IsPackable>true</IsPackable>'
+    }
     $fileContent = $fileContent.Replace($textToReplace, $newText + $textToReplace)
 
     $newText = ReadFilePreservingLineBreaks("$StartingFolder\nuget\NuGet.Package.ItemGroup.txt")

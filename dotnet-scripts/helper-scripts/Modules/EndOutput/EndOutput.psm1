@@ -1,6 +1,6 @@
 function EndOutput {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Start Time of the overall creation - this will be used to calculate the total process time.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Start Time of the overall creation - this will be used to calculate the total process time.')]
         [string]$startTime
     )
     

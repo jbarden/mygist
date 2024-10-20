@@ -1,16 +1,16 @@
 function CreateAndConfigureGitHubRepo {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the bearer token to access GitHub with.')]
         [string]$BearerToken,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the name of the repository to create.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the name of the repository to create.')]
         [string]$RepositoryName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the description for the repository.')]
         [string]$Description,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify the owner / organisation for the repository.')]
         [string]$Owner = "astar-development",
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify the root directory to clone the repository to (if $clone is set to true).')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify the root directory to clone the repository to (if $clone is set to true).')]
         [string]$RootDirectory,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify whether to clone the repository. The default is false')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify whether to clone the repository. The default is false')]
         [bool]$clone = $false
     )
     

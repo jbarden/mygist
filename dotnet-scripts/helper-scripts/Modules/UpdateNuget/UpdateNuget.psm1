@@ -1,6 +1,6 @@
 function UpdateNuget {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to use to create the new solution.')]
         [string]$BaseSolutionDirectory
     )
 

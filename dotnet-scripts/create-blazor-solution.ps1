@@ -2,17 +2,17 @@
 
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to use to create the new solution.')]
     [string]$RootDirectory,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name, this will be used to create the solution file and all associated projects.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the solution name, this will be used to create the solution file and all associated projects.')]
     [string]$SolutionName,
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the description for the repository.')]
     [string]$Description,
     [Parameter(HelpMessage='Specifies whether the GIT repo should be initialised. The default is true.')]
     [bool]$CreateAndConfigureGitHubRepo = $true,
-    [Parameter(Mandatory = $false, HelpMessage = 'Specify the bearer token to access GitHub with.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Please specify the bearer token to access GitHub with.')]
     [string]$BearerToken,
-    [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Please specify the owner / organisation for the repository.')]
     [string]$Owner = "astar-development",
     [Parameter(HelpMessage='Controls whether to run the update and NuGet restore. The default is $true to update all NuGet packages but this does add roughly 2 minutes.')]
     [bool]$UpdateNuget = $true,

@@ -1,24 +1,24 @@
 function CreateInitialSolution {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the base solution directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the base solution directory to use to create the new solution.')]
         [string]$BaseSolutionDirectory,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Project name to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Project name to use to create the new solution.')]
         [string]$ProjectName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the solution name to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the solution name to use to create the new solution.')]
         [string]$SolutionName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the description for the repository.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the description for the repository.')]
         [string]$Description,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Starting Folder to reset the directories so the copy files still work.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Starting Folder to reset the directories so the copy files still work.')]
         [string]$StartingFolder,
         [Parameter(HelpMessage = 'Specifies whether the GIT repo should be initialised. The default is true.')]
         [bool]$CreateAndConfigureGitHubRepo = $true,
         [Parameter(HelpMessage = 'Specifies the Bearer Token to use when configuring the GitHub repo.')]
         [string]$BearerToken,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify the owner / organisation for the repository.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify the owner / organisation for the repository.')]
         [string]$Owner = "astar-development",
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify whether the solution being created is a UI solution or not. The default is false.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify whether the solution being created is a UI solution or not. The default is false.')]
         [bool]$CreateUiDirectories = $false,
-        [Parameter(Mandatory = $false, HelpMessage = 'Specify whether the solution being created is a Class Library or not. The default is false.')]
+        [Parameter(Mandatory = $false, HelpMessage = 'Please specify whether the solution being created is a Class Library or not. The default is false.')]
         [bool]$CreateClassLibrary = $false
     )
 
@@ -58,6 +58,12 @@ function CreateInitialSolution {
 
     WriteColour -Message "Starting Unit.Tests creation at $($BaseSolutionDirectory)." -Colour "Magenta"
     dotnet new xunit --name "$($SolutionName).Unit.Tests" --output "$($BaseSolutionDirectory)\tests\unit\$($SolutionName).Unit.Tests"
+    dotnet add "$($BaseSolutionDirectory)\tests\unit\$($UIProjectName).Unit.Tests\$($UIProjectName).Unit.Tests.csproj" package --no-restore FluentAssertions --version "6.12.0"
+
+    $fileContent = Get-Content -Path "$($BaseSolutionDirectory)\tests\unit\$($SolutionName).Unit.Tests\$($SolutionName).Unit.Tests.csproj" -Raw
+    $textToReplace = '<Using Include="Xunit" />'
+    $fileContent = $fileContent.Replace($textToReplace, '<Using Include="FluentAssertions" />' + $textToReplace)
+    $fileContent | Set-Content -Path "$($BaseSolutionDirectory)\tests\unit\$($SolutionName).Unit.Tests"
     
     dotnet sln "$($BaseSolutionDirectory)\$($SolutionFile)" add "$($BaseSolutionDirectory)\tests\unit\$($SolutionName).Unit.Tests"
     WriteColour -Message "Created Unit.Tests project in $($BaseSolutionDirectory)." -Colour "Magenta"

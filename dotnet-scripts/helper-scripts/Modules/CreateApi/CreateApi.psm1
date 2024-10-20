@@ -1,10 +1,10 @@
 function CreateApi {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to use to create the new solution.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to use to create the new solution.')]
         [string]$BaseSolutionDirectory,
         [Parameter(Mandatory = $true, HelpMessage = 'The project name within the new solution.')]
         [string]$ProjectName,
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the Solution File name with the path.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the Solution File name with the path.')]
         [string]$SolutionFileWithPath
     )
 

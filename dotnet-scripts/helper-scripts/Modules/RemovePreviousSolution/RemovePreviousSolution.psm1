@@ -1,6 +1,6 @@
 function RemovePreviousSolution {
     param (
-        [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory to remove the previous solution from.')]
+        [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory to remove the previous solution from.')]
         [string]$BaseSolutionDirectory
     )
 

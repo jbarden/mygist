@@ -1,6 +1,6 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Specify the root directory of the UI Project, not the overarching root directory for the new solution.')]
+    [Parameter(Mandatory = $true, HelpMessage = 'Please specify the root directory of the UI Project, not the overarching root directory for the new solution.')]
     [string]$ProjectFolder
 )
 
